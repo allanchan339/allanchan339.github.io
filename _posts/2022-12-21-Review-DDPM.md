@@ -127,6 +127,7 @@ $$
 $$
 
 , we have
+
 $$
 \begin{aligned}
   x_t &= \sqrt{\alpha_t} x_{t-1} + \sqrt{1-\alpha_t} \epsilon_t \\
