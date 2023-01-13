@@ -95,7 +95,26 @@ $$
 
 ### Details on destruction process
 
+#### Measurable Function 
+
+Random variable is not a variable. Instead, it is a function.
+$$\epsilon_t = \epsilon_t(w)$$
+
+Now we let the $w$ is fixed for later proof.
+
+### Proof Helper by ODE
+
+In AMA2111, we have told to solve ODE $y' + P(x) = Q(x)$ by letting $\mu$ s.t.:
+
+$$
+\color{red}{\mu}\color{black}{y' + P(x) = }\color{red}{\mu}\color{black}{Q(x)} 
+$$
+
+Then we find the I.F. to solve for y, i.e. $\mu' = \mu P(x)$.
+Now we borrow the idea to solve the following equation. 
+
 we define each step as
+
 
 $$
 \boldsymbol{x}_t = \sqrt{\alpha_t}\boldsymbol{x}_{t-1} + \sqrt{\beta_t}\epsilon_t , \epsilon_t \sim \boldsymbol{N}(0, \boldsymbol{I}), \text{ where } \alpha_t + \beta_t = 1 \text{ and } \beta \approx 0
@@ -108,17 +127,27 @@ $$
 $$
 
 , we have
-
 $$
 \begin{aligned}
-\mathbf{x}_t 
-&= \sqrt{\alpha_t}\mathbf{x}_{t-1} + \sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t-1} \space \text{ ;where } \boldsymbol{\epsilon}_{t-1}, \boldsymbol{\epsilon}_{t-2}, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
+  x_t &= \sqrt{\alpha_t} x_{t-1} + \sqrt{1-\alpha_t} \epsilon_t \\
+  & \text{ we let } \mu_{t-1} = \mu_t \sqrt{\alpha_t} \\
+\frac{\mu_t}{\mu_{t-1}} &= \frac{1}{\sqrt{\alpha_t}}; \alpha_0:=1 \\
+\mu_t x_t &= \mu_t \sqrt{\alpha_t} x_{t-1} + \mu_t \sqrt{1-\alpha_t} \epsilon_t \\
+\text{Let } y_t = \frac{x_t}{\sqrt{\bar{\alpha_t}}} &= \mu_t x_t; \text{ where } \frac{\mu_T}{\mu_{t-1}}\frac{\mu_{t-1}}{\mu_{t-2}}\dots \frac{\mu_1}{\mu_0} = \mu_t = \frac{1}{\sqrt{\bar{\alpha_t}}} \text{ by telescoping product}\\
+y_t &= y_{t-1} + \frac{\sqrt{1-\alpha_t}}{\sqrt{\bar{\alpha}_t}}\epsilon_t, \text{ where } y_{t-1} = \mu_t\sqrt{\alpha_t}x_{t-1} = \mu_{t-1}x_{t-1} = \sqrt{\alpha_t}\mu_t x_{t-1}\\
+\text{ By telescoping sum, } \sum^T_{t=1}\Big( y_t - y_{t-1} \Big) &= \sum^T_{t=1}\frac{\sqrt{1-\alpha_t}}{\sqrt{\bar{\alpha}_t}}\epsilon_t \\
+y_T - y_0 &= \sum^T_{t=1}\frac{\sqrt{1-\alpha_t}}{\sqrt{\bar{\alpha}_t}}\epsilon_t \\
+\frac{x_T}{\sqrt{\bar{\alpha_T}}} &= x_0 + \sum^T_{t=1}\frac{\sqrt{1-\alpha_T}}{\sqrt{\bar{\alpha_t}}}\epsilon_t \\
+\therefore x_T &= \sqrt{\bar{\alpha_T}}x_0 + \sum^T_{t=1}\sqrt{\frac{\bar{\alpha_T}}{\bar{\alpha_t}}}\sqrt{1-\alpha_t}\epsilon_t \\
 
-\frac{\mathbf{x}_t}{\sqrt{\alpha_1\dots\alpha_t}} - \frac{\mathbf{x}_{t-1}}{\sqrt{\alpha_1\dots\alpha_t}} &= \frac{\sqrt{1-\alpha_t} \boldsymbol{\epsilon}_{t-1}}{\sqrt{\alpha_1\dots\alpha_t}} \\
-\frac{\mathbf{x}_T}{\sqrt{\alpha_1\dots\alpha_T}} - \mathbf{x}_0 &= \sum^T_{t=1} \frac{\sqrt{1-\alpha_t} \boldsymbol{\epsilon}_{t-1}}{\sqrt{\alpha_1\dots\alpha_t}} \\
-\mathbf{x}_T &= \sqrt{\alpha_1\dots\alpha_T}\mathbf{x}_0 + \sqrt{\alpha_{t+1}\dots\alpha_T}\sqrt{1-\alpha_t}\boldsymbol{\epsilon}_{t-1}\\
-&= \sqrt{(a_t\dots a_1)} \mathbf{x}_0 + \sqrt{1 - (a_t\dots a_1)}\boldsymbol{\bar{\epsilon}}\\
-&= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\boldsymbol{\bar{\epsilon}} \\
+\text{We define } \bar{\epsilon} &:= \frac{1}{\sqrt{1-\bar{\alpha_T}}} \sum^T_{t=1}\sqrt{\frac{\bar{\alpha_T}}{\bar{\alpha_t}}}\sqrt{1-\alpha_t}\epsilon_t \text{ is normally distributed} \\
+\mathbb{E}[\bar{\epsilon}] &= \frac{1}{\sqrt{1-\bar{\alpha_T}}}\sum^T_{t=1}\sqrt{\frac{\bar{\alpha_T}}{\bar{\alpha_t}}}\sqrt{1-\alpha_t}\cancelto{0}{\mathbb{E}[\epsilon_t]} = 0 \\
+
+Var(\bar{\epsilon}) &= \frac{1}{1-\bar{\alpha_T}}\sum^T_{t=1}\frac{\bar{\alpha_T}}{\bar{\alpha_t}}(1-\alpha_t)Var(\epsilon_t); \text{ where } Var(\epsilon_t) = \mathbf{I} \\
+&=\frac{1}{1-\bar{\alpha_T}}\sum^T_{t=1}\Big( \frac{\bar{\alpha_T}}{\bar{\alpha_t}} - \frac{\bar{\alpha_T}}{\bar{\alpha_{t-1}}} \Big)I \\
+&= \frac{1}{1-\bar{\alpha_T}}\Big( \frac{\bar{\alpha_T}}{\bar{\alpha_T}} - \frac{\bar{\alpha_T}}{\bar{\alpha_{0}}} \Big) I = I
+\therefore \bar{\epsilon} \sim \mathcal{N}(0, \mathbb{I}) \\
+\therefore x_T &= \sqrt{\bar{\alpha_T}}x_0 + \sqrt{1-\bar{\alpha_T}}\bar{\epsilon} \\
 q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})
 \end{aligned}
 $$
