@@ -467,10 +467,6 @@ sqrt_one_minus_alphas_cumprod = torch.sqrt(1. - alphas_cumprod)
 # calculations for posterior q(x_{t-1} | x_t, x_0)
 posterior_variance = betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
 
-def extract(a, t, x_shape):
-    batch_size = t.shape[0]
-    out = a.gather(-1, t.cpu())
-    return out.reshape(batch_size, *((1,) * (len(x_shape) - 1))).to(t.device)
 ```
 
 ### alphas_cumprod, alpha_cumprod_prev, sqrt_recip_alphas and posterior_variance
@@ -486,11 +482,131 @@ alphas_cumprod = torch.cumprod(alphas, axis=0)
         0.9037])
 ```
 
-To fix at $\alpha_0 = 1$ s.t. $x_0 = \alpha_0 x_0 + \beta_0\epsilon_0$, we need: 
+To fix at $\alpha_0 = 1$ s.t. $x_0 = \alpha_0 x_0 + \beta_0\epsilon_0$ to form $\bar{\alpha}_{t-1}$ we need: 
 ```python
 alphas_cumprod_prev = F.pad(alphas_cumprod[:-1], (1, 0), value=1.0)
 > tensor([1.0000, 0.9999, 0.9976, 0.9931, 0.9864, 0.9776, 0.9667, 0.9537, 0.9389,
         0.9222])
 ```
 
+We take recipical for later use
+```python
+sqrt_recip_alphas = torch.sqrt(1.0 / alphas)
+> tensor([1.0000, 1.0012, 1.0023, 1.0034, 1.0045, 1.0056, 1.0068, 1.0079, 1.0090,
+        1.0102])
+```
 
+The variance is chosen as $\sigma^2_t =  \frac{(1-\bar{\alpha}_{t-1})\beta_t}{1-\bar{\alpha}_t}$
+```python
+posterior_variance = betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
+> tensor([0.0000e+00, 9.5877e-05, 1.5750e-03, 3.4249e-03, 5.4264e-03, 7.5063e-03,
+        9.6330e-03, 1.1791e-02, 1.3971e-02, 1.6168e-02])
+```
+
+## Example of forward diffusion process
+We'll illustrate with a cats image how noise is added at each time step of the diffusion process.
+```python
+from PIL import Image
+import requests
+
+url = 'http://images.cocodataset.org/val2017/000000039769.jpg'
+image = Image.open(requests.get(url, stream=True).raw)
+
+```
+![圖 3](https://s2.loli.net/2023/01/13/vx2Fgrh7bOHqmQM.png) 
+
+In addition, we need to build an function to transform PIL image with shape 128 dim to tensor $\in [-1,1]$ or vice versa.
+```python
+from torchvision.transforms import Compose, ToTensor, Lambda, ToPILImage, CenterCrop, Resize
+
+image_size = 128
+
+transform = Compose([
+    Resize(image_size),
+    CenterCrop(image_size),
+    ToTensor(), # turn into Numpy array of shape HWC, divide by 255
+    Lambda(lambda t: (t * 2) - 1),
+    
+])
+
+reverse_transform = Compose([
+     Lambda(lambda t: (t + 1) / 2),
+     Lambda(lambda t: t.permute(1, 2, 0)), # CHW to HWC
+     Lambda(lambda t: t * 255.),
+     Lambda(lambda t: t.numpy().astype(np.uint8)),
+     ToPILImage(),
+])
+x_start = transform(image).unsqueeze(0)
+x_start = reverse_transform(x_start.squeeze())
+```
+![圖 4](https://s2.loli.net/2023/01/13/dcW1yinguxB6NaL.png)  
+
+We can now define the forward diffusion process as in the paper. Importantly, we also define an extract function, which will allow us to **extract** the appropriate tt index for a batch of indices:
+
+```python
+def extract(a, t, x_shape):
+    batch_size = t.shape[0]
+    out = a.gather(-1, t.cpu())
+    return out.reshape(batch_size, *((1,) * (len(x_shape) - 1))).to(t.device)
+
+# forward diffusion (using the nice property)
+def q_sample(x_start, t, noise=None):
+    if noise is None:
+        noise = torch.randn_like(x_start)
+
+    sqrt_alphas_cumprod_t = extract(sqrt_alphas_cumprod, t, x_start.shape)
+    sqrt_one_minus_alphas_cumprod_t = extract(
+        sqrt_one_minus_alphas_cumprod, t, x_start.shape
+    )
+
+    return sqrt_alphas_cumprod_t * x_start + sqrt_one_minus_alphas_cumprod_t * noise
+
+def get_noisy_image(x_start, t):
+  # add noise
+  x_noisy = q_sample(x_start, t=t)
+
+  # turn back into PIL image
+  noisy_image = reverse_transform(x_noisy.squeeze())
+
+  return noisy_image
+
+```
+for `t=40`, we have `get_noisy_image(x_start, t)` as
+
+![圖 5](https://s2.loli.net/2023/01/13/93f1iCnpaFTtlNB.png)  
+
+Let's visualize this for various time steps:
+```python
+import matplotlib.pyplot as plt
+
+# use seed for reproducability
+torch.manual_seed(0)
+
+# source: https://pytorch.org/vision/stable/auto_examples/plot_transforms.html#sphx-glr-auto-examples-plot-transforms-py
+def plot(imgs, with_orig=False, row_title=None, **imshow_kwargs):
+    if not isinstance(imgs[0], list):
+        # Make a 2d grid even if there's just 1 row
+        imgs = [imgs]
+
+    num_rows = len(imgs)
+    num_cols = len(imgs[0]) + with_orig
+    fig, axs = plt.subplots(figsize=(200,200), nrows=num_rows, ncols=num_cols, squeeze=False)
+    for row_idx, row in enumerate(imgs):
+        row = [image] + row if with_orig else row
+        for col_idx, img in enumerate(row):
+            ax = axs[row_idx, col_idx]
+            ax.imshow(np.asarray(img), **imshow_kwargs)
+            ax.set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
+
+    if with_orig:
+        axs[0, 0].set(title='Original image')
+        axs[0, 0].title.set_size(8)
+    if row_title is not None:
+        for row_idx in range(num_rows):
+            axs[row_idx, 0].set(ylabel=row_title[row_idx])
+
+    plt.tight_layout()
+
+plot([get_noisy_image(x_start, torch.tensor([t])) for t in [0, 50, 100, 150, 199]])
+```
+![圖 6](https://s2.loli.net/2023/01/13/OjV6GqI2N4Kn3Qc.png)  
