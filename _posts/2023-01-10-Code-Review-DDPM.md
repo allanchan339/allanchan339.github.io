@@ -610,3 +610,121 @@ def plot(imgs, with_orig=False, row_title=None, **imshow_kwargs):
 plot([get_noisy_image(x_start, torch.tensor([t])) for t in [0, 50, 100, 150, 199]])
 ```
 ![圖 6](https://s2.loli.net/2023/01/13/OjV6GqI2N4Kn3Qc.png)  
+
+## Loss function
+
+```python
+def p_losses(denoise_model, x_start, t, noise=None, loss_type="l1"):
+    if noise is None:
+        noise = torch.randn_like(x_start)
+
+    x_noisy = q_sample(x_start=x_start, t=t, noise=noise)
+    predicted_noise = denoise_model(x_noisy, t)
+
+    if loss_type == 'l1':
+        loss = F.l1_loss(noise, predicted_noise)
+    elif loss_type == 'l2':
+        loss = F.mse_loss(noise, predicted_noise)
+    elif loss_type == "huber":
+        loss = F.smooth_l1_loss(noise, predicted_noise)
+    else:
+        raise NotImplementedError()
+
+    return loss
+```
+
+## Datasets Example
+
+Here we use the Datasets library to easily load the Fashion MNIST dataset from the hub (Hugging Face). This dataset consists of images which already have the same resolution, namely 28x28.
+
+```python
+from datasets import load_dataset
+
+# load dataset from the hub
+dataset = load_dataset("fashion_mnist")
+image_size = 28
+channels = 1
+batch_size = 128
+```
+
+Transform and dataloader as follows:
+```python
+from torchvision import transforms
+from torch.utils.data import DataLoader
+
+# define image transformations (e.g. using torchvision)
+transform = Compose([
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Lambda(lambda t: (t * 2) - 1)
+])
+
+# define function
+def transforms(examples):
+   examples["pixel_values"] = [transform(image.convert("L")) for image in examples["image"]]
+   del examples["image"]
+
+   return examples
+
+transformed_dataset = dataset.with_transform(transforms).remove_columns("label")
+
+# create dataloader
+dataloader = DataLoader(transformed_dataset["train"], batch_size=batch_size, shuffle=True)
+```
+
+## Sampling
+The sampling algorithm is defined as follows:
+
+![圖 8](https://s2.loli.net/2023/01/14/c1vmlpMGKt2AfUW.png)  
+
+- Generating new images from a diffusion model happens by reversing the diffusion process: we start from $T$, where we sample pure noise from a Gaussian distribution, 
+- and then use our neural network to gradually denoise it (using the conditional probability it has learned), until we end up at time step $t=0$. 
+- As shown above, we can derive a slighly less denoised image $\mathbf{x}_{t-1}$ ​by plugging in the reparametrization of the mean, using our noise predictor. Remember that the variance is known ahead of time.
+
+```python
+@torch.no_grad()
+def p_sample(model, x, t, t_index):
+    betas_t = extract(betas, t, x.shape)
+    sqrt_one_minus_alphas_cumprod_t = extract(
+        sqrt_one_minus_alphas_cumprod, t, x.shape
+    )
+    sqrt_recip_alphas_t = extract(sqrt_recip_alphas, t, x.shape)
+    
+    # Equation 11 in the paper
+    # Use our model (noise predictor) to predict the mean
+    model_mean = sqrt_recip_alphas_t * (
+        x - betas_t * model(x, t) / sqrt_one_minus_alphas_cumprod_t
+    )
+
+    if t_index == 0:
+        return model_mean
+    else:
+        posterior_variance_t = extract(posterior_variance, t, x.shape)
+        noise = torch.randn_like(x)
+        # Algorithm 2 line 4:
+        return model_mean + torch.sqrt(posterior_variance_t) * noise 
+
+# Algorithm 2 (including returning all images)
+@torch.no_grad()
+def p_sample_loop(model, shape):
+    device = next(model.parameters()).device
+
+    b = shape[0]
+    # start from pure noise (for each example in the batch)
+    img = torch.randn(shape, device=device)
+    imgs = []
+
+    for i in tqdm(reversed(range(0, timesteps)), desc='sampling loop time step', total=timesteps):
+        img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i)
+        imgs.append(img.cpu().numpy())
+    return imgs
+
+@torch.no_grad()
+def sample(model, image_size, batch_size=16, channels=3):
+    return p_sample_loop(model, shape=(batch_size, channels, image_size, image_size))
+
+```
+
+$$
+\text{model means } = \tilde{\mu}_t = \frac{1}{\sqrt{\alpha_t}}\Big( x_t - \frac{\beta_t }{\sqrt{1-\bar{\alpha}_t}}\epsilon_\theta(x,t) \Big)
+$$
