@@ -357,8 +357,12 @@ Therefore, we can use equation 11 to get:
 $$
 \begin{align}
     \bar{\mu}(x_1 \vert x_2 = \mathbf{a}) &= \mu_1 + \Sigma_{12} \Sigma^{-1}_{22}(\mathbf{a}-\mu_2) \nonumber\\
-    \mu(x_{t-1}\vert x_t, x_0) &= \sqrt{\bar{\alpha}_{t-1}} x_{0} + \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}}\big( x_t - \sqrt{\alpha_t}x_0 \big) \nonumber\\
-    \mu(x_{t-1}\vert x_t, x_0) &= (\sqrt{\bar{\alpha}_{t-1}} - \frac{\alpha_t(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}}) x_{0} + \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t \\
+    \mu(x_{t-1}\vert x_t, x_0) &= \sqrt{\bar{\alpha}_{t-1}} x_{0} + \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}}\big( x_t - \sqrt{\bar{\alpha}_t}x_0 \big) \nonumber\\
+    
+    &=  \sqrt{\bar{\alpha}_{t-1}} x_{0} + \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t - \frac{\sqrt{\alpha_t\bar{\alpha_t}}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha_t}}x_0 \nonumber\\
+    &= \Big( \sqrt{\bar{\alpha}_{t-1}} - \frac{\alpha_t\sqrt{\bar{\alpha}_{t-1}}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha_t}} \Big)x_0 + \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t \nonumber\\
+    &= \sqrt{\bar{\alpha}_{t-1}}\Big(\frac{1-\bar{\alpha}_{t} -\alpha_t + \bar{\alpha}_t}{1-\bar{\alpha}_{t}}\Big)x_0 + \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t \nonumber\\
+    &= \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\boldsymbol{x}_0\\
     \Sigma(x_{t-1}\vert x_t, x_0) &= \Sigma_{11} - \Sigma_{12}\Sigma^{-1}_{22}\Sigma_{21} \nonumber \\
     &= (1-\bar{\alpha}_{t-1})I -  \frac{\alpha_t(1-\bar{\alpha}_{t-1})^2}{(1-\bar{\alpha_t})}I \nonumber \\
     &=  \frac{(1-\bar{\alpha}_{t-1})(1-\bar{\alpha_t}) - \alpha_t(1-\bar{\alpha}_{t-1})^2}{(1-\bar{\alpha_t})}I\nonumber \\
@@ -382,6 +386,6 @@ Finally, we have a closed form for reveresed process:
 $$
 \begin{align}
     p(x_{t-1}\vert x_t, x_0) &= \mathbb{N}(x_{t-1}; \mu(x_{t-1}\vert x_t, x_0), \Sigma(x_{t-1}\vert x_t, x_0)) \nonumber \\
-    &= \mathbb{N}(x_{t-1}; (\sqrt{\bar{\alpha}_{t-1}} - \frac{\alpha_t(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}}) x_{0} + \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_{t}} x_t, \frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})}I)
+    &= \mathbb{N}(x_{t-1};\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\boldsymbol{x}_0, \frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})}I)
 \end{align}
 $$
