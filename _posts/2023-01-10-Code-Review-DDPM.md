@@ -816,6 +816,7 @@ samples = sample(model, image_size=image_size, batch_size=64, channels=channels)
 random_index = 5
 plt.imshow(samples[-1][random_index].reshape(image_size, image_size, channels), cmap="gray")
 ```
+![圖 9](https://s2.loli.net/2023/01/17/hNr9SyQPwEeKgaj.png)  
 
 ### GIF for denoising process
 ```python
@@ -833,3 +834,7 @@ animate = animation.ArtistAnimation(fig, ims, interval=50, blit=True, repeat_del
 animate.save('diffusion.gif')
 plt.show()
 ```
+
+### Extra 
+![圖 11](https://s2.loli.net/2023/01/17/4zOYDIMfxjZ1nsp.png)  
+
