@@ -446,7 +446,7 @@ def sigmoid_beta_schedule(timesteps):
 ![圖 1](https://s2.loli.net/2023/01/12/q8yHSb6cZrAhEm9.png)  
 ![圖 2](https://s2.loli.net/2023/01/12/v9T6qcgL4sfBuhx.png)  
 
-To start with, let's use the linear schedule for $T=300$ time steps and define the various variables from the $\beta_t$ which we will need, such as the cumulative product of the variances $\bar{\alpha}_t$. Each of the variables below are just 1-dimensional tensors, storing values from $t$ to $T$. Importantly, we also define an extract function, which will allow us to extract the appropriate tt index for a batch of indices.
+To start with, let's use the linear schedule for $T=300$ time steps and define the various variables from the $\beta_t$ which we will need, such as the cumulative product of the variances $\bar{\alpha}_t$. Each of the variables below are just 1-dimensional tensors, storing values from $t$ to $T$. Importantly, we also define an extract function, which will allow us to extract the appropriate $t$ index for a batch of indices.
 
 ```python
 timesteps = 300
