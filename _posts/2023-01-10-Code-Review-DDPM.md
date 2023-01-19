@@ -496,7 +496,9 @@ sqrt_recip_alphas = torch.sqrt(1.0 / alphas)
         1.0102])
 ```
 
-The variance is chosen as $\sigma^2_t =  \frac{(1-\bar{\alpha}_{t-1})\beta_t}{1-\bar{\alpha}_t}$
+The variance is chosen as 
+$$\sigma^2_t =  \frac{(1-\bar{\alpha}_{t-1})\beta_t}{1-\bar{\alpha}_t}$$
+
 ```python
 posterior_variance = betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
 > tensor([0.0000e+00, 9.5877e-05, 1.5750e-03, 3.4249e-03, 5.4264e-03, 7.5063e-03,
