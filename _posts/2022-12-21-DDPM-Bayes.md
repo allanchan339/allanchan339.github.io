@@ -151,9 +151,9 @@ $$
     p(\boldsymbol{x}_t \vert \boldsymbol{x}_0) &= \boldsymbol{N}(\boldsymbol{x}_t; \sqrt{\bar{\alpha}_t} 
     \boldsymbol{x}_0, (1-\bar{\alpha_t})\boldsymbol{I}) \\
 \boldsymbol{x}_t &= \sqrt{\bar{\alpha}_t} \boldsymbol{x}_0 + \sqrt{(1-\bar{\alpha_t})} \boldsymbol{\varepsilon},\boldsymbol{\varepsilon}\sim\mathcal{N}(\boldsymbol{0}, \boldsymbol{I}) \\
-x_0 &= \frac{1}{\sqrt{\bar{\alpha_t}}}(x_t-\sqrt{\bar{\beta_t}}\boldsymbol{\epsilon)} \\
-i.e. \space \bar{u}(x_t) &= \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{\bar{\beta_t}}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \\
-\boldsymbol{Loss} &= \frac{\beta_t}{\alpha_t}\left\Vert \boldsymbol{\varepsilon}_t - \boldsymbol{\epsilon}_{\boldsymbol{\theta}}(\sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{\bar{\beta}}\boldsymbol{\bar{\epsilon}}, t)\right\Vert^2
+x_0 &= \frac{1}{\sqrt{\bar{\alpha_t}}}(x_t-\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon)} \\
+i.e. \space \bar{u}(x_t) &= \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \\
+\boldsymbol{Loss} &= \frac{\beta_t}{\alpha_t}\left\Vert \boldsymbol{\varepsilon}_t - \boldsymbol{\epsilon}_{\boldsymbol{\theta}}(\sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\boldsymbol{\bar{\epsilon}}, t)\right\Vert^2
 \end{aligned}
 $$
 
@@ -161,13 +161,13 @@ Insert $\bar{u}(t)$ into equation 6, we will get
 
 $$
 \begin{aligned}
-    p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t) \approx p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t, \boldsymbol{x}_0=\bar{\boldsymbol{\mu}}(\boldsymbol{x}_t)) &= \mathcal{N}\left(\boldsymbol{x}_{t-1}; \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\Big( \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{\bar{\beta_t}}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \Big),\frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})} \boldsymbol{I}\right) \\
-    \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\Big( \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{\bar{\beta_t}}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \Big) &= \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t}) \sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{\bar{\beta_t}}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \\
-    &= \Big(\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})} + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t}) \sqrt{\bar{\alpha_t}}} \Big)x_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t}) \sqrt{\bar{\alpha_t}}}\sqrt{\bar{\beta_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
+    p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t) \approx p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t, \boldsymbol{x}_0=\bar{\boldsymbol{\mu}}(\boldsymbol{x}_t)) &= \mathcal{N}\left(\boldsymbol{x}_{t-1}; \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\Big( \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \Big),\frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})} \boldsymbol{I}\right) \\
+    \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\Big( \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \Big) &= \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t}) \sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \\
+    &= \Big(\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})} + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t}) \sqrt{\bar{\alpha_t}}} \Big)x_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t}) \sqrt{\bar{\alpha_t}}}\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon_\theta (x_t, t)} \\
     &= \frac{\sqrt{\bar{\alpha_t}}\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1}) + \sqrt{\bar{\alpha}_{t-1}}\beta_t}{\sqrt{\bar{\alpha_t}}(1-\bar{\alpha_t})}x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})} \sqrt{\alpha_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
-    &= \big(\frac{\alpha_t(1-\bar{\alpha_{t-1}}) + \beta_t}{\sqrt{\alpha_t}\bar{\beta_t}}\big)x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})} \sqrt{\alpha_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
-    &= \big(\frac{(1-\beta_t)-\bar{\alpha_{t}} + \beta_t}{\sqrt{\alpha_t}\bar{\beta_t}}\big)x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})} \sqrt{\alpha_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
-    &= \big(\frac{\bar{\beta_t}}{\sqrt{\alpha_t}\bar{\beta_t}}\big)x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})} \sqrt{\alpha_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
+    &= \big(\frac{\alpha_t(1-\bar{\alpha_{t-1}}) + \beta_t}{\sqrt{\alpha_t}1-\bar{\alpha}_t}\big)x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})} \sqrt{\alpha_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
+    &= \big(\frac{(1-\beta_t)-\bar{\alpha_{t}} + \beta_t}{\sqrt{\alpha_t}1-\bar{\alpha}_t}\big)x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})} \sqrt{\alpha_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
+    &= \big(\frac{1-\bar{\alpha}_t}{\sqrt{\alpha_t}1-\bar{\alpha}_t}\big)x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})} \sqrt{\alpha_t}}\boldsymbol{\epsilon_\theta (x_t, t)} \\
     &= \frac{1}{\sqrt{\alpha_t}}\big(x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})}}\boldsymbol{\epsilon_\theta (x_t, t)} \big)
 \end{aligned}
 $$
@@ -388,7 +388,7 @@ $$
     p(x_{t-1}\vert x_t, x_0) &= \mathbb{N}(x_{t-1}; \mu(x_{t-1}\vert x_t, x_0), \Sigma(x_{t-1}\vert x_t, x_0)) \nonumber \\
     &= \mathbb{N}(x_{t-1};\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\boldsymbol{x}_0, \frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})}I) \\
     p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t) \approx p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t, \boldsymbol{x}_0&=\bar{\boldsymbol{\mu}}(\boldsymbol{x}_t)) = \mathcal{N}\left(\boldsymbol{x}_{t-1}; \frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{(1-\bar{\alpha_t})}\boldsymbol{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{(1-\bar{\alpha_t})}\bar{\boldsymbol{\mu}}(\boldsymbol{x}_t),\frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})} \boldsymbol{I}\right) \\
-    \bar{u}(x_t) &= \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{\bar{\beta_t}}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \nonumber \\
+    \bar{u}(x_t) &= \frac{1}{\sqrt{\bar{\alpha_t}}}\big(x_t-\sqrt{1-\bar{\alpha}_t}\boldsymbol{\epsilon_\theta (x_t, t)}\big) \nonumber \\
     \therefore p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t) \approx p(\boldsymbol{x}_{t-1}|\boldsymbol{x}_t, \boldsymbol{x}_0 &=\bar{\boldsymbol{\mu}}(\boldsymbol{x}_t)) = \mathcal{N}\left(\boldsymbol{x}_{t-1}; \frac{1}{\sqrt{\alpha_t}}\big(x_t - \frac{\beta_t}{\sqrt{(1-\bar{\alpha_t})}}\boldsymbol{\epsilon_\theta (x_t, t)} \big),\frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})} \boldsymbol{I}\right)
 \end{align}
 $$
