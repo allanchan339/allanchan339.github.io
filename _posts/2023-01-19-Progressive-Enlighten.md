@@ -104,7 +104,8 @@ $$
     \alpha &= \beta^{\frac{\eta (1-\eta^T)}{1 -\eta}}
 \end{aligned}
 $$
-Proved by program 
+By letting $\beta = 0.9, \gamma = 3.5, T = 10$, we can make darkening process progressively s.t. 
+
 ```python
 beta_enligten, gamma_enlighten, T_max = 0.9, 3.5, 10
 eta = gamma_enlighten**(1/T_max)
