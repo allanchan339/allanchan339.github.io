@@ -95,6 +95,15 @@ $$
 \end{aligned}
 $$
 
+Refering to original equation $I^i_{out} = \beta \times (\alpha \times I^i_{in})^\gamma $, we simply the equation to $ x_T = \beta x_0^\gamma$, and we can have 
+
+$$
+\begin{aligned}
+    \eta^T &= \gamma \\
+    \eta &= \gamma^{\frac{1}{T}} \\
+    \alpha &= \beta^{\frac{\eta (1-\eta^T)}{1 -\eta}}
+\end{aligned}
+$$
 Proved by program 
 ```python
 beta_enligten, gamma_enlighten, T_max = 0.9, 3.5, 10
