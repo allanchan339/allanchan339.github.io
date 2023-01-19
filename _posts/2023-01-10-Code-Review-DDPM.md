@@ -837,10 +837,3 @@ animate.save('diffusion.gif')
 plt.show()
 ```
 
-### Extra 
-High exposure image
-
-![圖 11](https://s2.loli.net/2023/01/17/4zOYDIMfxjZ1nsp.png)  
-
-Low exposure image 
-![圖 12](https://s2.loli.net/2023/01/17/pWlfs6hSyGmYHng.png)  
