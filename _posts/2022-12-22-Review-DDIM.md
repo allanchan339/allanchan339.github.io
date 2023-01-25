@@ -123,7 +123,7 @@ $$\alpha_t$$
 $$\bar{\alpha}_t$$
  is deterministic and are hyperparameters. As denoising objective 
  $$\left\Vert\boldsymbol{\varepsilon} - \boldsymbol{\epsilon}_{\boldsymbol{\theta}}(\bar{\alpha}_t \boldsymbol{x}_0 + \bar{\beta}_t \boldsymbol{\varepsilon}, t)\right\Vert^2$$
- (which describe we want a model to predict $x_0$ from $x_t$) does not depend on the specific forward procedure as long as $p(x_t|x_0)$ is fixed, we may also consider forward processes with lengths smaller than T, which accelerates the corresponding generative processes without having to train a different model.
+ (which describe we want a model to predict $x_0$ from $x_t$) does not depend on the specific forward procedure as long as **$p(x_t|x_0)$ is fixed**, we may also consider forward processes with lengths smaller than T, which accelerates the corresponding generative processes without having to train a different model.
 
 > In DDIM view, if we have trained $x_1, x_2, \dots, x_{1000}$ to predict $x_0$, meaning we have 1000 model that train to map $x_1 \rightarrow x_0, x_2 \rightarrow x_0, \dots, x_{1000} \rightarrow x_0$.
 
@@ -145,3 +145,110 @@ $$
 In experiment, both DDPM($\eta=1$) and DDIM($\eta=0$) is trained with T=1000. They observed that DDIM can produce the best quality samples when $S=dim(\tau)$ is small while DDPM does perform better when we can afford to run the full reverse Markov diffusion steps $(S=T=1000)$.
 ![](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/DDIM-results.png)
 
+## DDIM Proof
+### Mathematical Induction
+[Mathematical induction](https://en.wikipedia.org/wiki/Mathematical_induction) is a method for proving that a statement $P(n)$ is true for every natural number n, that is, that the infinitely many cases $P(0), P(1), P(2), P(3), \dots$  all hold.
+
+The following steps should be followed.
+
+1. $P(1)$ is true
+2. $P(k)$ is true, implying $P(k+1)$ is true
+3. Then $P(n)$ is true for all $n \in \mathbb{N}$
+
+### Assumption
+DDIM author introduced a new equation 
+$$
+q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t-\sqrt{\alpha_t} \boldsymbol{x}_0}{\sqrt{1-\alpha_t}}, \sigma_t^2 \boldsymbol{I}\right)
+$$
+
+where all $\alpha$ is equal to $\bar{\alpha}$ in [DDPM](2022-12-21-Review-DDPM.md).
+
+and 
+
+$$
+q_\sigma\left(\boldsymbol{x}_t \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_t} \boldsymbol{x}_0,\left(1-\alpha_t\right) \boldsymbol{I}\right)
+$$, which is proven in DDPM.
+
+### Proof by Mathematical Induction
+The statement is as follows:
+
+Assume for any $t \leq T, q_\sigma\left(\boldsymbol{x}_t \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_t} \boldsymbol{x}_0,\left(1-\alpha_t\right) \boldsymbol{I}\right)$ holds, if $q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0,\left(1-\alpha_{t-1}\right) \boldsymbol{I}\right)$, then we can prove the statment by MI for $t$ from $T$ to $1$. 
+
+
+Following the first step of MI, now we need to combine two equation above to calculate $q\sigma(\boldsymbol{x}_{t-1}\vert \boldsymbol{x}_0)$ by [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability)
+
+$$
+q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right):=\int_{\boldsymbol{x}_t} q_\sigma\left(\boldsymbol{x}_t \mid \boldsymbol{x}_0\right) q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right) \mathrm{d} \boldsymbol{x}_t
+$$
+
+where $q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0,\left(1-\alpha_{t-1}\right) \boldsymbol{I}\right)$ in DDPM.
+
+#### Finding $\mu_{t-1}$
+First, we need to find out $\mu_{t-1}$
+
+$$
+\begin{aligned}
+    \mu_{t-1} &= \mathbb{E}[x_{t-1}\vert x_0] = \mathbb{E}_{x_t \vert x_0}\big[\mathbb{E}[x_{t-1}\vert x_t, x_0]\big] \\
+    &= \mathbb{E}_{x_t \vert x_0}[\sqrt{\alpha_{t-1}}x_0 + \sqrt{1-\alpha_{t-1}-\sigma^2_t}\frac{x_t-\sqrt{\alpha_t}x_0}{\sqrt{1-\alpha_t}}] \\
+    &= \sqrt{\alpha_{t-1}}x_0 + \sqrt{1-\alpha_{t-1}-\sigma^2_t}\frac{\mathbb{E}[x_t\vert x_0]-\sqrt{\alpha_t}x_0}{\sqrt{1-\alpha_t}}, \text{ as conditional to } x_0 \\
+    &= \sqrt{\alpha_{t-1}}x_0 + \sqrt{1-\alpha_{t-1}-\sigma^2_t}\frac{\sqrt{\alpha_t}x_0-\sqrt{\alpha_t}x_0}{\sqrt{1-\alpha_t}} \\
+    &= \sqrt{\alpha_{t-1}}x_0
+\end{aligned}
+$$
+
+#### Finding $\Sigma_{t-1}$
+
+Before finding $\Sigma_{t-1}$, we need to apply Conditional Variance.
+
+##### Proof for Law of Total Variance 
+$$
+\begin{aligned}
+    Var(X\vert Y) &:= E[(X-E[X\vert Y])^2 \vert Y] \\
+    Var(Y) &= E(Y^2) - E(Y)^2 \\
+    E(Y^2) &= Var(Y) + E(Y)^2 \\
+    &= E[Var(Y\vert X) + E(Y\vert X)^2], \text{ by law of total expectation} \\
+    E(Y^2) - E(Y)^2 &= E[Var(Y\vert X) + E(Y\vert X)^2] - E(Y)^2 \\
+    &= E[Var(Y\vert X) + E(Y\vert X)^2] - E[E(Y \vert X)]^2, \text{ by law of total expectation} \\
+    &= E[Var(Y\vert X)] + \Big(E[E(Y\vert X)^2] - E[E(Y \vert X)]^2 \Big) \\
+    \therefore Var(Y) &= E[Var(Y\vert X)] + Var(E[Y\vert X])
+\end{aligned}
+$$
+
+where [Law of Total Expectation](https://statproofbook.github.io/P/mean-tot) is proven here.
+
+The proof above is also true in vector version.
+
+#### Proof
+From
+$$
+q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t-\sqrt{\alpha_t} \boldsymbol{x}_0}{\sqrt{1-\alpha_t}}, \sigma_t^2 \boldsymbol{I}\right)
+$$
+, we can have $Var(x_{t-1} \vert x_t, x_0) = \sigma^2_t \boldsymbol{I}$ and $\mathbb{E}[x_{t-1} \vert x_t, x_0] = \sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t}{\sqrt{1-\alpha_t}} + \text{ sth related to } x_0$
+
+$$
+\begin{aligned}
+    \therefore Var(\mathbb{E}[x_{t-1} \vert x_t, x_0]) &= \frac{1-\alpha_{t-1} - \sigma^2_t}{1 - \alpha_t} Var(x_t \vert x_0) \\
+    &=\frac{1-\alpha_{t-1} - \sigma^2_t}{1 - \alpha_t}(1-\alpha_t)\boldsymbol{I} \\
+    &= (1-\alpha_{t-1} - \sigma^2_t)\boldsymbol{I} \\
+    \therefore \Sigma_{t-1} &= Var(x_{t-1}) = E[Var( x_{t-1}\vert x_t, x_0)] + Var(E[x_{t-1}\vert x_t, x_0]) \\
+    &= \mathbb{E}[\sigma^2_t\boldsymbol{I}] + (1-\alpha_{t-1} - \sigma^2_t)\boldsymbol{I} = (1-\alpha_{t-1})\boldsymbol{I}
+\end{aligned}
+$$
+
+This suggests 
+$$
+q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t-\sqrt{\alpha_t} \boldsymbol{x}_0}{\sqrt{1-\alpha_t}}, \sigma_t^2 \boldsymbol{I}\right)
+$$
+is true for $t$ from $T$ to $1$.
+
+### More useful closed form for sampling
+we can derive a more useful closed form s.t. 
+
+$$
+\begin{aligned}
+    q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right)&=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t-\sqrt{\alpha_t} \boldsymbol{x}_0}{\sqrt{1-\alpha_t}}, \sigma_t^2 \boldsymbol{I}\right) \\
+    x_t &= \sqrt{\alpha_t}x_0 + \sqrt{1-\alpha_t}\epsilon^{(t)}_\theta(x_t) \\
+    \therefore x_{t-1} &:= \sqrt{\alpha_{t-1}} \boldsymbol{x}_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t-\sqrt{\alpha_t} \boldsymbol{x}_0}{\sqrt{1-\alpha_t}} + \sigma_t \epsilon_t \\
+    &= \sqrt{\alpha_{t-1}} \underbrace{\left(\frac{\boldsymbol{x}_t-\sqrt{1-\alpha_t} \epsilon_\theta^{(t)}\left(\boldsymbol{x}_t\right)}{\sqrt{\alpha_t}}\right)}_{\text {"predicted } \boldsymbol{x}_0 \text { " }} +\underbrace{\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \epsilon_\theta^{(t)}\left(\boldsymbol{x}_t\right)}_{\text {“direction pointing to } \boldsymbol{x}_t \text {"}}+\underbrace{\sigma_t \epsilon_t}_{\text {random noise }}
+\end{aligned}
+$$
