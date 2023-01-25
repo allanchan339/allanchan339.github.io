@@ -172,8 +172,11 @@ $$, which is proven in DDPM.
 ### Proof by Mathematical Induction
 The statement is as follows:
 
-Assume for any $t \leq T, q_\sigma\left(\boldsymbol{x}_t \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_t} \boldsymbol{x}_0,\left(1-\alpha_t\right) \boldsymbol{I}\right)$ holds, if $q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0,\left(1-\alpha_{t-1}\right) \boldsymbol{I}\right)$, then we can prove the statment by MI for $t$ from $T$ to $1$. 
-
+Assume for any 
+$$t \leq T, q_\sigma\left(\boldsymbol{x}_t \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_t} \boldsymbol{x}_0,\left(1-\alpha_t\right) \boldsymbol{I}\right)$$
+ holds, if 
+ $$q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0,\left(1-\alpha_{t-1}\right) \boldsymbol{I}\right)$$
+ , then we can prove the statment by MI for $t$ from $T$ to $1$. 
 
 Following the first step of MI, now we need to combine two equation above to calculate $q\sigma(\boldsymbol{x}_{t-1}\vert \boldsymbol{x}_0)$ by [law of total probability](https://en.wikipedia.org/wiki/Law_of_total_probability)
 
@@ -181,7 +184,9 @@ $$
 q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right):=\int_{\boldsymbol{x}_t} q_\sigma\left(\boldsymbol{x}_t \mid \boldsymbol{x}_0\right) q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right) \mathrm{d} \boldsymbol{x}_t
 $$
 
-where $q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0,\left(1-\alpha_{t-1}\right) \boldsymbol{I}\right)$ in DDPM.
+where 
+$$q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0,\left(1-\alpha_{t-1}\right) \boldsymbol{I}\right)$$
+ in DDPM.
 
 #### Finding $\mu_{t-1}$
 First, we need to find out $\mu_{t-1}$
@@ -223,7 +228,10 @@ From
 $$
 q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t-\sqrt{\alpha_t} \boldsymbol{x}_0}{\sqrt{1-\alpha_t}}, \sigma_t^2 \boldsymbol{I}\right)
 $$
-, we can have $Var(x_{t-1} \vert x_t, x_0) = \sigma^2_t \boldsymbol{I}$ and $\mathbb{E}[x_{t-1} \vert x_t, x_0] = \sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t}{\sqrt{1-\alpha_t}} + \text{ sth related to } x_0$
+, we can have 
+$$Var(x_{t-1} \vert x_t, x_0) = \sigma^2_t \boldsymbol{I}$$
+ and 
+ $$\mathbb{E}[x_{t-1} \vert x_t, x_0] = \sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t}{\sqrt{1-\alpha_t}} + \text{ sth related to } x_0$$
 
 $$
 \begin{aligned}
