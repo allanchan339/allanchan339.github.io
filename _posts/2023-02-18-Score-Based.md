@@ -54,4 +54,129 @@ This property is illustrated as gif as well:
 >![](https://img-blog.csdnimg.cn/img_convert/c7136dd4f83a72da0cefc5726148c51d.gif)
 > Parameterizing score functions. No need to worry about normalization.
 
+#### Should verify
+The gradient should always point to the high density region, making optimization for distribution approximation possible. 
+# Score function $s_\theta(x)$ and score matching
 
+Therefore, we can train a model to approximate the score function 
+
+$$ s_\theta(x) = \nabla_x log p_\theta (x) $$. 
+
+We can minimize the Fisher divergence between the model and the data distribution, as (noted that s → S and p → P for visibility):
+
+$$
+\begin{aligned}
+    L_\theta &= \frac{1}{2}\mathbb{E}\Big( \Vert S_\theta(x) - \nabla_x log P_\theta(x) \Vert^2  \Big) \\
+    &= \frac{1}{2}\int_{\mathbb{R}^N} P(x) \Vert S_\theta(x) - \nabla_x log P(x) \Vert^2 dx \\ 
+    &= \frac{1}{2} \int P(x) \Big( \Vert S_\theta(x) \Vert^2 - 2<S_\theta(x), \nabla_x log P(x)> + \Vert \nabla_x log P(x) \Vert^2 \Big) dx \\
+    &\sim \int P(x) \Big( \frac{1}{2} \Vert S_\theta(x) \Vert^2 - <S_\theta(x), \nabla_x log P(x) > \Big) dx \\
+    &= \int P(x) \Big( \frac{1}{2} \Vert S_\theta(x) \Vert^2 + \sum^N_{i=1} \frac{\partial S_\theta^{(i)}(x)}{\partial x_i} \Big) dx \\
+\end{aligned}
+$$
+
+Unfortunately, it is still impractical as data distribution is discrete. This leads to [MCMC Method](#discrete-case-score-matching) and [Parzen Method](#continuous-case-score-matching).
+
+For the dot product $$<S_\theta(x), \nabla_x log P(x) > $$, we simply it by considering one element $x_i$ in calculation 
+
+$$
+\begin{aligned}
+    &-\int_\mathbb{R}^N S_\theta^{(i)}(x)\frac{\partial}{\partial x_i}logP(x) dx \\
+    &= -\int_\mathbb{R}^N S_\theta^{(i)}(x)\frac{\partial}{\partial x_i}P(x) dx \\ 
+    &= -\Big[ S_\theta^{(i)}(x) 
+    \underbrace{P(x)}_{=0} \Big]^{\infty}_{-\infty} + \int^{\infty}_{-\infty} P(x) \frac{\partial}{\partial x_i}S_\theta^{(i)}(x), \text{by integral by part}
+\end{aligned}
+$$
+We take limit as a p.d.f condition 2 define the integral domain $(-\infty, \infty)$ . 
+Remark:
+1. We add $\frac{1}{2}$ just for simpler calculation when taking integral by part. 
+2. $$\Vert x \Vert^2 = x\cdot x$$
+3. $$\Vert x + y \Vert^2 = \Vert x \Vert^2 + 2<x, y> + \Vert y \Vert^2$$
+
+## Integral by part
+Simple equation as follows:
+$$
+\begin{aligned}
+\int_a^b u(x) v^{\prime}(x) d x & =[u(x) v(x)]_a^b-\int_a^b u^{\prime}(x) v(x) d x \\
+& =u(b) v(b)-u(a) v(a)-\int_a^b u^{\prime}(x) v(x) d x .
+\end{aligned}
+$$
+
+However, it is not intuitive, it can also be:
+ ![圖 2](https://s2.loli.net/2023/02/19/BcmKstvoRikb4Mr.png)  
+
+Example 1: $\int x cos(x) dx$
+$$
+\begin{aligned}
+    &\int x cos(x) dx \\
+    &= x sin(x) - \int 1 sin(x) dx \\
+    &= x sin(x) + cos(x) + Constant
+\end{aligned}
+$$
+
+# Discrete Case Score Matching
+We have 
+$$L_\theta = \int P(x) \Big( \frac{1}{2} \Vert S_\theta(x) \Vert^2 + \sum^N_{i=1} \frac{\partial S_\theta^{(i)}(x)}{\partial x_i} \Big) dx$$
+
+For discrete case, we can use [MCMC method](#monte-carlo-markov-chain-mcmc-method) to approximate, then we can have 
+
+$$
+\begin{aligned}
+    \tilde{L}_\theta = \frac{1}{2}\sum^n_{t=1}\Big( \frac{1}{2}\Vert S_\theta^{(t)}(x) \Vert^2 + \sum^N_{i=1} \frac{\partial S_\theta^{(i)}(x^{(t)})}{\partial x_i} \Big)
+\end{aligned}
+$$
+## Monte Carlo Markov Chain (MCMC) Method
+In the simplist form, for an original expection to be calculated $E_p(f(x))$, we can approximate via MCMC as:
+
+$$
+\begin{aligned}
+    \mathbb{E}_p(f(x)) &= \int P(x)f(x)dx \\
+    &\approx \frac{1}{n}\sum^n_{i=1}f(x^{(i)}), \text{ where } x^{(i)} \sim P
+\end{aligned}
+$$
+
+# Continuous Case Score Matching
+We understand that $P_{data}(x)$ is basically a p.m.f. However, we want to apply deep learning and back-propagation for much faster calculation than MCMC. 
+
+**How?**
+
+##  Parzen window (kernel) density estimation
+In statistics, kernel density estimation (KDE) is the application of kernel smoothing for probability density estimation, i.e., a non-parametric method to estimate the probability density function of a random variable based on kernels as weights.
+
+Let $(x_1, x_2, \dots, x_n)$ be independent and identically distributed samples drawn from some univariate distribution with an unknown density $ƒ$ at any given point $x$. We are interested in estimating the shape of this function $ƒ$. Its kernel density estimator is
+
+$$
+f_h(x) = \frac{1}{n} \sum^n_{i=1}K_h(x-x_i)
+$$
+where $K$ is the kernel — a non-negative function — and $h > 0$ is a smoothing parameter called the bandwidth. Special case $h=0$ means histogram using step function kernal.
+
+Taking a simplist example with table:
+
+| Sample | 1    | 2    | 3    | 4   | 5   | 6   |
+|:------:|------|------|------|-----|-----|-----|
+|  Value | -2.1 | -1.3 | -0.4 | 1.9 | 5.1 | 6.2 |
+
+First we draw a histogram, as figure below (LHS). It has right angle and is not differentiable. Now we need to smoothing it by some controllable distribution, usually gaussian kernel. The following example use $\sigma^2 = h =2.5$ as bandwidth. 
+
+![圖 3](https://s2.loli.net/2023/02/19/ak18TCAF2MpgUqx.png)  
+
+This methods can transfer a p.m.f $P_{data}(x)$ to p.d.f $P_\sigma(x)$ by smoothing techniques
+
+## Denoising Score Matching (DSM)
+By applying Parzen windows (add noise for smoothing), we have 
+
+$$
+\begin{aligned}
+    L_\theta &= L(\theta)= \frac{1}{2}\int_{\mathbb{R}^N} P(x) \Vert S_\theta(x) - \nabla_x log P(x) \Vert^2 dx \\ 
+    L_\sigma(\theta)&= \frac{1}{2}\int_{\mathbb{R}^N} P_\sigma(x) \Vert S_\theta(x) - \nabla_x log P_\sigma(x) \Vert^2 dx
+\end{aligned}
+$$
+
+However, it is still impractical as we only can input a sample (smoothing by noise) to model and hope the model to find the potential distribution, i.e. we should let 
+
+$$
+\begin{aligned}
+    x &\sim \{x^{(1)}, \dots, x^{(N)}\} \\
+    \tilde{x} &\sim P_\sigma(\tilde{x}) \\
+    P_\sigma(x, \tilde{x}) &= P(x)P_\sigma(\tilde{x}\vert x)
+\end{aligned}
+$$
