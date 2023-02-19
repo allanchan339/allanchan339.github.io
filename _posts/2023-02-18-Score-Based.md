@@ -172,11 +172,31 @@ $$
 $$
 
 However, it is still impractical as we only can input a sample (smoothing by noise) to model and hope the model to find the potential distribution, i.e. we should let 
-
+pairs of clean and corrupted examples $(x, \tilde{x})$
 $$
 \begin{aligned}
     x &\sim \{x^{(1)}, \dots, x^{(N)}\} \\
     \tilde{x} &\sim P_\sigma(\tilde{x}) \\
-    P_\sigma(x, \tilde{x}) &= P(x)P_\sigma(\tilde{x}\vert x)
+    P_\sigma(x, \tilde{x}) &= P_{data}(x)P_\sigma(\tilde{x}\vert x)
+\end{aligned}
+$$
+
+Therefore, for $L_\sigma(\theta)$, we have 
+
+$$
+\begin{aligned}
+    L^{DSM}_\sigma(\theta) &= \frac{1}{2} \int \int P_\sigma(x, \tilde{x}) \Vert S_\theta (\tilde{x}) - \nabla_{\tilde{x}} log P_\sigma (\tilde{x}\vert x) \Vert^2 d\tilde{x}dx \\
+    &= \frac{1}{2} \int\int P_{data}(x)P_\sigma(\tilde{x}\vert x)\Vert S_\theta (\tilde{x}) - \nabla_{\tilde{x}} log P_\sigma (\tilde{x}\vert x) \Vert^2 d\tilde{x}dx \\
+    &=\frac{1}{2} \int  P_{data}(x) \int P_\sigma(\tilde{x}\vert x)\Vert S_\theta (\tilde{x}) - \nabla_{\tilde{x}} log P_\sigma (\tilde{x}\vert x) \Vert^2 d\tilde{x}dx \\
+\end{aligned}
+$$
+
+For guassian kernal chosen, we have 
+
+$$
+\begin{aligned}
+    P_\sigma(\tilde{x}\vert x) &= \frac{1}{Constant} exp(- \frac{\Vert \tilde{x} - x \Vert^2}{2\sigma^2}) \\
+    log P_\sigma(\tilde{x}\vert x) &= \tilde{Constant} - \frac{\Vert \tilde{x} - x \Vert^2}{2\sigma^2} \\
+    \nabla_{\tilde{x}} log P_\sigma(\tilde{x}\vert x) &= - \frac{\tilde{x} - x}{\sigma^2}
 \end{aligned}
 $$
