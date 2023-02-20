@@ -27,7 +27,7 @@ We should find  the distribution $$p_{data}(x)$$ (a closed form). However, it is
 Can we use a score function to replace finding the probability density function p.d.f or probability mass function p.m.f? Yes
 
 >A p.d.f should fulfill two things:
->1. $$p(x) \ge 0 for all x \in \mathbb{R}$$
+>1. $$p(x) \ge 0 \text{ for all } x \in \mathbb{R}$$
 >2. $$\int^{\infty}_{-\infty} p(x) dx = 1$$ 
 
 This lead to $$s_\theta(x) = \nabla_x log p_\theta (x)$$. Let us forget score function for seconds.
