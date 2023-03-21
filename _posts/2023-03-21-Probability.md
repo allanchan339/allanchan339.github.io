@@ -50,4 +50,4 @@ tags:
        - : $$F = \{ \emptyset, \{a\}, \{b\} \{c\}, \{a,b\}, \{b,c\}, \{c,a\}, \Omega \}$$
      - (3) $$\Omega = \mathbb{R} = \{x \vert -\infty < x < \infty \}$$
        - : $$F_0 = \{\emptyset, \Omega\}$$
-       - : $$\vdots$$
+       - : $$F = \{ \emptyset, \{a\}, (a,b), (a,b], [a,b), [a,b], (-\infty, a),[a, \infty), (a, \infty), \Omega\}$$, which is also called Borel $$\sigma$$ field on the real line.
