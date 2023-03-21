@@ -26,13 +26,13 @@ tags:
 
    - Example
      - E: Tossing a coin
-       - :$$\Omega = \{H, T\}$$
+       -  Omega = \{H, T\}$$
      - E: Rolling a die
-       - :$$\Omega = \{1,2,3,4,5,6\}$$
+       - : $$\Omega = \{1,2,3,4,5,6\}$$
      - E: # of calls ongoing in telephone exchange
-       - :$$\Omega = \{ 0, 1, 2, \cdots, \infty \}$$
+       - : $$\Omega = \{ 0, 1, 2, \cdots, \infty \}$$
      - E: Temperature of a particular city
-       - :$$\Omega = \{x \vert 0 < x < 50^o C \}$$
+       - : $$\Omega = \{x \vert 0 < x < 50^o C \}$$
 
 3. The $$\sigma$$ field
    1. A collection $$F$$ of subsets of $$\Omega$$ is called a $$\sigma$$ field over $$\Omega$$
@@ -45,3 +45,9 @@ tags:
        - : $$F = \{ \emptyset, \{H\}, \{T\}, \Omega\}$$
        - : $$F_0 = \{\emptyset, \Omega\}$$, which is called as trival $$\sigma$$ field
      - (2) $$\Omega = \{a, b, c\}$$
+       - : $$F_0 = \{\emptyset, \Omega\}$$
+       - : $$F= \{\emptyset, \{a\}, \{b,c\}, \Omega \}$$
+       - : $$F = \{ \emptyset, \{a\}, \{b\} \{c\}, \{a,b\}, \{b,c\}, \{c,a\}, \Omega \}$$
+     - (3) $$\Omega = \mathbb{R} = \{x \vert -\infty < x < \infty \}$$
+       - : $$F_0 = \{\emptyset, \Omega\}$$
+       - : $$\vdots$$
