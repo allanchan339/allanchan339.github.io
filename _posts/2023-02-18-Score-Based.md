@@ -1,6 +1,6 @@
 ---
 layout:       post
-title:        "Review: Score-Based Generative Modeling through Stochastic Differential Equations"
+title:        "Review: Generative Modeling by Estimating Gradients of the Data Distribution"
 author:       "Allan"
 header-style: text
 catalog:      true
@@ -14,7 +14,7 @@ tags:
 ---
 
 # Introduction
-[Yang et.al ](https://arxiv.org/abs/2011.13456) introduced Score-Based Generative Modeling through Stochastic Differential Equations that can generate high resolution images as diffusion model did. 
+[Yang et.al ](https://arxiv.org/abs/1907.05600) introduced Generative Modeling by Estimating Gradients of the Data Distribution that can generate high resolution images as diffusion model did. 
 
 In the following paragraph, we discuss 
 1. How to approximate **Score** in image generation 
