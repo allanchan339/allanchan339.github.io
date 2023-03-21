@@ -42,6 +42,6 @@ tags:
      3. If $$A_1, A_2 , cdots, \in F$$, then $$U^\infty_{i=1} A_i \in F$$
    - Example
      - $$\Omega = \{H, T \}$$
-       - $$F = \{ \empty, \{H\}, \{T\}, \Omega\}$$
-       - $$F_0 = \{\empty, \Omega\}$$, which is called as trival $$\sigma$$ field
+       - $$F = \{ \emptyset, \{H\}, \{T\}, \Omega\}$$
+       - $$F_0 = \{\emptyset, \Omega\}$$, which is called as trival $$\sigma$$ field
      - $$\Omega = \{a, b, c\}$$
