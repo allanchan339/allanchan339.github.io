@@ -5,6 +5,7 @@ author:       "Allan"
 header-style: text
 catalog:      true
 mathjax:      true
+hidden: true
 tags:
     - Cheatsheet
     - Maths

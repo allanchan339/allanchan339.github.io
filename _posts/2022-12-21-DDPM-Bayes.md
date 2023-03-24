@@ -5,6 +5,7 @@ author:       "Allan"
 header-style: text
 catalog:      true
 mathjax:      true
+comments: true
 tags:
     - AI
     - Review

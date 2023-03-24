@@ -4,6 +4,7 @@ title: "Reparameterization Trick"
 author:       "Allan"
 header-style: text
 catalog:      true
+comments: true
 tags:
     - AI
     - Maths

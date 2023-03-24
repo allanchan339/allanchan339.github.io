@@ -5,7 +5,7 @@ author:       "Allan"
 header-style: text
 catalog:      true
 mathjax:      true
-publish:      false
+hidden: true
 tags:
     - AI
     - Brainstorming
