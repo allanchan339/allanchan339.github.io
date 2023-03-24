@@ -61,5 +61,6 @@ tags:
    3. A real value set function $$P$$ defined on $$F$$ is called a probabilty if satisfying
       1. $$P(A) \geq 0$$ for all $$A \in F$$
       2. $$P(\Omega) = 1$$
-      3. If $$A_1, A_2, \cdots$$ are natually disjoint events inf $$F$$, then $$P(U_{i=1} A_i) = \sum_i P(A_i)$$ 
+      3. If $$A_1, A_2, \cdots$$ are mutually disjoint events inf $$F$$, then $$P(U_{i=1} A_i) = \sum_i P(A_i)$$ 
    4. The triplet $$(\Omega, F, P)$$ is called a probability space
+   5. Elements of $$\Omega$$ is called sample; Elements of $$\F$$ is called events
