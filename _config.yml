@@ -75,7 +75,7 @@ netease_comment: false
 # Sidebar settings
 sidebar: true # whether or not using Sidebar.
 sidebar-about-description: "Allan Chan ; As an AI and computer vision enthusiast"
-sidebar-avatar: 'https://github.com/allanchan339/allanchan339.github.io/blob/master/img/avatar-allan-home.jpeg?raw=true' # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: 'https://avatars.githubusercontent.com/u/38370649?s=400&u=d0f72c3f32b1bc41a341f294aeba84f2dca6bcae&v=4' # use absolute URL, seeing it's used in both `/` and `/about/`
 
 # Featured Tags
 featured-tags: true # whether or not using Feature-Tags
