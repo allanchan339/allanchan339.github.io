@@ -8,8 +8,7 @@ mathjax:      true
 comments: true
 tags:
     - AI
-    - Code
-    - Review
+    - Code Review
     - Diffusion
     - Generation
 ---

@@ -8,9 +8,9 @@ mathjax:      true
 comments: true
 tags:
     - AI
-    - Code
+    - Review
     - Diffusion
-    - Enlightening
+    - Generation
 ---
 
 # Introduction
