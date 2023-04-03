@@ -64,4 +64,41 @@ $$
 \end{split}
 $$
 
-Therefore, 
+Therefore, for
+$$
+\widetilde{\beta}_t\left(x_t, x_0\right)=\frac{\beta_t\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t}
+$$
+
+We have 
+$$
+\begin{aligned}
+& \tilde{\mu}_t\left(x_t, x_0\right) \\
+& =\left(\frac{\sqrt{\alpha_t} x_t-\sqrt{\alpha_t}\left(1-\sqrt{\alpha_t}\right) g\left(x_l\right)}{1-\alpha_t}+\frac{\sqrt{\bar{\alpha}_{t-1}} x_0+\left(1-\sqrt{\bar{\alpha}_{t-1}}\right) g\left(x_l\right)}{1-\bar{\alpha}_{t-1}}\right) \tilde{\beta}_t\left(x_t, x_0\right) \\
+& =\frac{\left(\sqrt{\alpha_t} x_t-\sqrt{\alpha_t}\left(1-\sqrt{\alpha_t}\right) g\left(x_l\right)\right)\left(1-\bar{\alpha}_{t-1}\right)+\left(\sqrt{\bar{\alpha}_{t-1}} x_0+\left(1-\sqrt{\bar{\alpha}_{t-1}}\right) g\left(x_l\right)\right)\left(1-\alpha_t\right)}{1-\bar{\alpha}_t} \\
+& =\frac{\sqrt{\bar{\alpha}_{t-1}} \beta_t}{1-\bar{\alpha}_t} x_0+\frac{\sqrt{\alpha_t}\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} x_t \\
+& \color{red}{+\frac{\left(1-\sqrt{\bar{\alpha}_{t-1}}\right)\left(1-\alpha_t\right)-\sqrt{\alpha_t}\left(1-\sqrt{\alpha_t}\right)\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} g\left(x_l\right)} \\
+&
+\end{aligned}
+$$
+
+## Summary
+### For training
+$$
+\begin{aligned}
+&\text{repeat:} \\
+&&x_0 \sim g(x_0); t \sim U(0,T) \\
+&&\epsilon_t \sim  N(\frac{1-\sqrt{\bar{\alpha}_t}}{\sqrt{1-\bar{\alpha}_t}}g(x_l), I) \\
+&& \text{gradient descent step on } \nabla_{\theta} \Vert \epsilon_t - \epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon_t), t) \Vert^2 \\
+& \text{until convergence}
+\end{aligned}
+$$
+
+### For inference
+$$
+\begin{aligned}
+& x^{pred}_0 = \frac{1}{\sqrt{\alpha_t}}\left(x_t-\sqrt{1-\bar{\alpha}_t} \varepsilon_\theta\left(x_t, t\right)\right) \\
+& =\frac{\sqrt{\bar{\alpha}_{t-1}} \beta_t}{1-\bar{\alpha}_t}(\frac{1}{\sqrt{\alpha_t}}\left(x_t-\sqrt{1-\bar{\alpha}_t} \varepsilon_\theta\left(x_t, t\right)\right)) +\frac{\sqrt{\alpha_t}\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} x_t \\
+& \color{red}{+\frac{\left(1-\sqrt{\bar{\alpha}_{t-1}}\right)\left(1-\alpha_t\right)-\sqrt{\alpha_t}\left(1-\sqrt{\alpha_t}\right)\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} g\left(x_l\right)} \\
+
+\end{aligned}
+$$
