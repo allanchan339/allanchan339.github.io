@@ -52,7 +52,15 @@ $$
 Suppose $$x_{t-1} \mid x_t, x_0 \sim N\left(\tilde{\mu}_t\left(x_t, x_0\right), \tilde{\beta}_t\left(x_t, x_0\right) I\right)$$
 $$
 \begin{split}
-\frac{1}{2\tilde{\beta}_t}\Vert x_{t-1} - \sqrt{\alpha_t}x_{t-1} - \tilde{\mu}_t(x_t, x_0) \Vert^2 &=  \frac{1}{2\tilde{\beta}_t}\Vert x_{t-1} \Vert^2 - \langle \frac{\tilde{\mu}_t(x_t, x_0)}{\tilde{\beta}_t}, x_{t-1} \rangle\\
-% &=\frac{1}{2\left(1-\bar{\alpha}_l\right)}\left\|x_t-\sqrt{\bar{\alpha}_t} x_0-\left(1-\sqrt{\bar{\alpha}_l}\right) g\left(x_l\right)\right\|^2+\text { const. } \\
+\frac{1}{2\tilde{\beta}_t}\Vert x_{t-1} - \sqrt{\alpha_t}x_{t-1} - \tilde{\mu}_t(x_t, x_0) \Vert^2 &=  \frac{1}{2\tilde{\beta}_t}\Vert x_{t-1} \Vert^2 - \langle \frac{\tilde{\mu}_t(x_t, x_0)}{\tilde{\beta}_t}, x_{t-1} \rangle + \cdots\\
+& = \frac{1}{2\left(1-\alpha_t\right)}\left\|x_t-\sqrt{\alpha_t} x_{t-1}-\left(1-\sqrt{\alpha_t}\right) g\left(x_l\right)\right\|^2 \\
+& +\frac{1}{2\left(1-\bar{\alpha}_{t-1}\right)}\left\|x_{t-1}-\sqrt{\bar{\alpha}_{t-1}} x_0-\left(1-\sqrt{\bar{\alpha}_{t-1}}\right) g\left(x_l\right)\right\|^2 \\
+& -\frac{1}{2\left(1-\bar{\alpha}_t\right)}\left\|x_t-\sqrt{\bar{\alpha}_t} x_0-\left(1-\sqrt{\bar{\alpha}_t}\right) g\left(x_l\right)\right\|^2+\text { const. } \\
+= & \frac{1}{2\left(1-\alpha_t\right)}\left(\alpha_t\left\|x_{t-1}\right\|^2-2\left\langle x_t-\left(1-\sqrt{\alpha_t}\right) g\left(x_l\right), \sqrt{\alpha_t} x_{t-1}\right\rangle+\cdots\right) \\
+& +\frac{1}{2\left(1-\bar{\alpha}_{t-1}\right)}\left(\left\|x_{t-1}\right\|^2-2\left\langle\sqrt{\bar{\alpha}_{t-1}} x_0+\left(1-\sqrt{\bar{\alpha}_{t-1}}\right) g\left(x_l\right), x_{t-1}\right\rangle+\cdots\right) \\
+= & \frac{\alpha_t\left(1-\bar{\alpha}_{t-1}\right)+\left(1-\alpha_t\right)}{2\left(1-\alpha_t\right)\left(1-\bar{\alpha}_{t-1}\right)}\left\|x_{t-1}\right\|^2  \\
+&-\left\langle\frac{\sqrt{\alpha_t} x_t-\sqrt{\alpha_t}\left(1-\sqrt{\alpha_t}\right) g\left(x_t\right)}{1-\alpha_t}+\frac{\sqrt{\bar{\alpha}_{t-1}} x_0+\left(1-\sqrt{\bar{\alpha}_{t-1}}\right) g\left(x_l\right)}{1-\bar{\alpha}_{t-1}}, x_{t-1}\right\rangle+\cdots
 \end{split}
 $$
+
+Therefore, 
