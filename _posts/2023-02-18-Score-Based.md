@@ -32,7 +32,7 @@ Can we use a score function to replace finding the probability density function 
 
 This lead to $$s_\theta(x) = \nabla_x log p_\theta (x)$$. Let us forget score function for seconds.
 
-# Why $\nabla_x log p (x)$ ?
+# Why $$\nabla_x \log {p(x)}$$ ?
 Taking log provide a good property, we use log to escape normalization. Consider a p.d.f $q(x)$ which is unnormalized, we should perform an operation s.t. $$p(x) = \frac{e^{-q(x)}}{Z}$$, $$Z$$ is a normalizing constant to make $$q(x)$$ fulfill condition 2. 
 
 Second, consider $$\frac{dlog(P)}{dx} = \frac{1}{P}\frac{dP}{dx}$$, it is actually calculating the rate of change of function $P$.
