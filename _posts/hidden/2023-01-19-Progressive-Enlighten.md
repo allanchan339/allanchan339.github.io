@@ -6,6 +6,7 @@ header-style: text
 catalog:      true
 mathjax:      true
 comments: true
+hidden: true
 tags:
     - AI
     - Code
