@@ -100,6 +100,6 @@ $$
 & \tilde{u}_\theta(x_t, t)=\frac{\sqrt{\bar{\alpha}_{t-1}} \beta_t}{1-\bar{\alpha}_t}(\frac{1}{\sqrt{\alpha_t}}\left(x_t-\sqrt{1-\bar{\alpha}_t} \varepsilon_\theta\left(x_t, t\right)\right)) +\frac{\sqrt{\alpha_t}\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} x_t \\
 & \color{red}{+\frac{\left(1-\sqrt{\bar{\alpha}_{t-1}}\right)\left(1-\alpha_t\right)-\sqrt{\alpha_t}\left(1-\sqrt{\alpha_t}\right)\left(1-\bar{\alpha}_{t-1}\right)}{1-\bar{\alpha}_t} g\left(x_l\right)} \\
 \\
-x_{t-1} = \tilde{u}_\theta(x_t, t) + z_t; z_t \sim N(0, I)
+& x_{t-1} = \tilde{u}_\theta(x_t, t) + z_t; z_t \sim N(0, I)
 \end{aligned}
 $$
