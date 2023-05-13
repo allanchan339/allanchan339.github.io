@@ -56,7 +56,7 @@ The following command is used to burn the ISO file to USB. The command is execut
 ```bash
 diskutil list external
 diskutil eraseDisk MS-DOS "WIN_USB1" MBR disk[your disk1 number]
-diskutil eraseDisk ExFAT WIN_USB2 MBR disk[your disk2 number]
+diskutil eraseDisk ExFAT "WIN_USB2" MBR disk[your disk2 number]
 hdiutil mount [your ISO file name]
 rsync -avh --progress --exclude=sources /Volumes/[your ISO file name]/ /Volumes/WIN_USB1/
 mkdir /Volumes/WIN_USB1/sources
