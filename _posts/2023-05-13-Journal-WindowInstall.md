@@ -40,15 +40,20 @@ In MacOS environment, the creation of Windows 11 USB is not easy. The official s
 
 The reason is that the Windows 11 ISO file is larger than 4GB. Therefore, the USB is required to be formatted as NTFS. However, MacOS does not support NTFS format. Therefore, the USB cannot be created in MacOS.
 
-Or if you have angel on your side (you have a new machine build which support exFAT on BIOS), you can reformat the USB with exFAT format and burn the ISO file to your USB. 
 
 The following command is used to burn the ISO file to USB. The command is executed in MacOS.
 
 ```bash
 diskutil list external
-diskutil eraseDisk exFAT "[Your USB name]" GBT disk[your disk number]
+diskutil eraseDisk MS-DOS "[Your USB name]" MBR disk[your disk number]
 hdiutil mount [your ISO file name]
-rsync -avh --progress /Volumes/[your ISO file name]/ /Volumes/[Your USB name]/
+rsync -avh --progress --exclude=sources/install.wim /Volumes/[your ISO file name]/ /Volumes/[Your USB name]/
+wimlib-imagex split /Volumes/[your ISO file name]/sources/install.wim /Volumes/[Your USB name]/sources/install.swm 4096
 diskutil unmount /dev/disk[your disk number]
 ```
 
+For those who dont have wimlib, you can install it by brew.
+
+```bash
+brew install wimlib
+```
