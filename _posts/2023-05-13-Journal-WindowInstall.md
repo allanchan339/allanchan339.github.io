@@ -40,20 +40,37 @@ In MacOS environment, the creation of Windows 11 USB is not easy. The official s
 
 The reason is that the Windows 11 ISO file is larger than 4GB. Therefore, the USB is required to be formatted as NTFS. However, MacOS does not support NTFS format. Therefore, the USB cannot be created in MacOS.
 
+So you need two USB to install the windows. The step is [as follows](https://gist.github.com/bmatcuk/fda5ab0fb127e9fd62eaf43e845a51c3?permalink_comment_id=3579269):
+
+
+1. Get TWO usb sticks, and format using macOS Disk Utility. First >2GB, FAT32, Master Boot Record (MBR). Second >8GB, formatted as exFAT, MBR.
+2. Download the Windows 10/11 ISO. Open on the Mac desktop.
+3. Copy everything EXCEPT “sources” folder onto FAT32 USB (drag and drop).
+4. On the same USB, create a folder called “sources”, and copy into it the one file “boot.wim” from the “sources” folder in the ISO
+5. Copy everything from the ISO onto the exFAT USB. It seems not to matter that some materials will appear on both USBs.
+6. Plug both USBs into the PC.
+7. The PC was able to boot from the FAT32 USB; and it found the install.wim file (and whatever else it needed) from the exFAT USB without any additional voodoo, and completed the install successfully.
 
 The following command is used to burn the ISO file to USB. The command is executed in MacOS.
 
 ```bash
 diskutil list external
-diskutil eraseDisk MS-DOS "[Your USB name]" MBR disk[your disk number]
+diskutil eraseDisk MS-DOS "WIN_USB1" MBR disk[your disk1 number]
+diskutil eraseDisk ExFAT WIN_USB2 MBR disk[your disk2 number]
 hdiutil mount [your ISO file name]
-rsync -avh --progress --exclude=sources/install.wim /Volumes/[your ISO file name]/ /Volumes/[Your USB name]/
-wimlib-imagex split /Volumes/[your ISO file name]/sources/install.wim /Volumes/[Your USB name]/sources/install.swm 4096
-diskutil unmount /dev/disk[your disk number]
+rsync -avh --progress --exclude=sources /Volumes/[your ISO file name]/ /Volumes/WIN_USB1/
+mkdir /Volumes/WIN_USB1/sources
+cp /Volumes/[your ISO file name]/sources/boot.wim /Volumes/WIN_USB1/sources/
+
+rsync -avh --progress /Volumes/[your ISO file name]/ /Volumes/WIN_USB2
 ```
+
+To check the disk number, you can use disk utility in MacOS. 
 
 For those who dont have wimlib, you can install it by brew.
 
 ```bash
 brew install wimlib
 ```
+
+# Installation
