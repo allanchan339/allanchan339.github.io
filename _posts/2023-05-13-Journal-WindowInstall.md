@@ -67,10 +67,5 @@ rsync -avh --progress /Volumes/[your ISO file name]/ /Volumes/WIN_USB2
 
 To check the disk number, you can use disk utility in MacOS. 
 
-For those who dont have wimlib, you can install it by brew.
-
-```bash
-brew install wimlib
-```
 
 # Installation
