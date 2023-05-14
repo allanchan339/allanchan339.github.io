@@ -41,8 +41,12 @@ The primary solution is to load the drive from USB on installation page, which r
 They suggest a solution that is to use the [RSTSetup.exe](https://www.intel.com/content/www/us/en/download/19512/intel-rapid-storage-technology-driver-installation-software-with-intel-optane-memory-10th-and-11th-gen-platforms.html) to install the driver from another Windows machine to the USB. Then the driver can be loaded in the installation page.
 
 ## Solution
-Luckily, I can turn off the VMD support in exchange to recognition of hard disk. The solution is to enter the BIOS and turn off the VMD support. Then the hard disk can be recognized in the installation page. However, you need to erase the data in the old hard disks as the partition table with and without VMD is different.
+As VMD is not really a must for me, I can turn off the VMD support in exchange to recognition of hard disk. The solution is to enter the BIOS and turn off the VMD support. Then the hard disk can be recognized in the installation page. However, you need to erase the data in the old hard disks as the partition table with and without VMD is different.
 
+Last but not least, VMD driver is provided by Motherboard manufacturer, as follows:
+
+[IRST driver](https://download.asrock.com/Drivers/Intel/SATA/RapidStorage(v19.5.0.1037.1_0907).zip)
+[Reference](https://www.asrock.com/mb/Intel/Z790%20Steel%20Legend%20WiFi/#Download)
 # Creation of Windows 11 USB
 ## Problem
 In MacOS environment, the creation of Windows 11 USB is not easy. The official solution is to use the [Media Creation Tool](https://www.microsoft.com/en-us/software-download/windows11) to create the USB. However, the tool is only available in Windows environment.
