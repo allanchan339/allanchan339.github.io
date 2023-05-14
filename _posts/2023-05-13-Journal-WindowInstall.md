@@ -24,7 +24,15 @@ Luckily I have wired keyboard in hand. I tried to recover the system. The proble
 
 I have no choice but to reinstall Windows 11. However, the installation is so unfriendly that I have to spend 2 days to figure out how to install it.
 
-# VMD driver and support
+# IRST driver and VMD support
+![圖 3](https://s2.loli.net/2023/05/14/bQR7T1zSLtDy8hW.png)  
+![圖 4](https://s2.loli.net/2023/05/14/Pid2HhnGuVkCZSL.png)  
+
+## Introduction of VMD
+In the latest Intel platforms, Intel® Volume Management Device (Intel® VMD) is used to manage storage devices with the Intel® RST software.
+
+The Intel VMD hardware generates 'dummy' devices for multi-function devices when mapped, these functions may be visible to the Windows® operating system. 
+
 ## Problem
 In the old configuration, VMD is turned on, which is provided by Intel to support hot plug of M.2 SSD. However, the driver is deleted by recovery. Therefore, I cannot see any hard disk in the installation page. 
 
