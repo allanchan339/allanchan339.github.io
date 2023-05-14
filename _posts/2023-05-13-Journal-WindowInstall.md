@@ -1,6 +1,6 @@
 ---
 layout:       post
-title:        "Debug: Install Windows 11"
+title:        "Journal: Debug Windows 11 Installation"
 author:       "Allan"
 header-style: text
 catalog:      true
@@ -68,4 +68,25 @@ rsync -avh --progress /Volumes/[your ISO file name]/ /Volumes/WIN_USB2
 To check the disk number, you can use disk utility in MacOS. 
 
 
-# Installation
+# TPM 2.0, Secure Boot, UEFI and PTT
+To install Windows 11, harsh requirement must be fulfilled.
+
+1. The BIOS must support UEFI, which is supported by my motherboard (Z790 Steal Legend WiFi).
+2. Secure Boot is a configuration in BIOS. It must be turned on to install Windows 11.
+3. TPM is short for Trusted Platform Module. Until Windows 11 was announced, TPM was something not many people had heard of. It’s an added layer of protection so potential malware cannot access any credentials, encryption keys, and other very sensitive user data stored in your system. Think of the TPM as the fingerprint or facial recognition system on your smartphone. Without the correct biometrics, you can’t access any information. 
+4. PTT is short for Platform Trust Technology. It is a firmware-based TPM version 2.0 solution. It is supported by my motherboard (Z790 Steal Legend WiFi) with Intel CPU.
+
+# Reinstallation of Windows 11
+As the finger print is coded on TPM 2.0 chip (either Physical or Virtual) in the previous installation. To reinstall Windows 11 successfully, you must perform the clear step.
+
+In my motherboard, a configuration called "Pending Operation" in trusted computing can be found. The only option is "clear TPM". After clearing the TPM, the finger print is removed and the installation can be performed.
+
+## Problem
+The installation will be failed if the TPM is not cleared and new Windows key is provided. The error code is 0xc0000005. The error code 0xc0000005 is a Windows operating system error that is also known as the "Access Violation" error. This error typically occurs when an application attempts to access a memory location that it is not authorized to access. 
+
+In the installation, the error code 0xc0000005 is caused by the finger print in TPM. The finger print is not authorized to write the new Windows key. Therefore, the installation is failed.
+
+## Localization of Error
+You can burn a new Windows 10 bootable USB to install in your PC. Before the installation, you must turn off all configuration related to TPM, such as PTT and trusted computing and secure booot etc. If the installation is successful, the problem is localized to the write access in TPM.
+
+# Conclusion
