@@ -228,7 +228,13 @@ The last part to be considered is the motherboard. The motherboard is the most d
 
 However, the memory test keep showning positive results. Therefore, I doubt the error is caused by motherboard. Regarding memory access. The following components are related:
 1. CPU Memory Controller
+
+![圖 6](https://s2.loli.net/2023/05/16/1twRoAySCJ3mcdG.png)  
+
 2. Motherboard BUS between RAM and CPU
+
+![圖 7](https://s2.loli.net/2023/05/16/iLTtKQZOlvCm2rq.png)  
+
 3. RAM chip itself
 
 The CPU is passed. The RAM is passed. Therefore, the motherboard is the most possible cause of the error.
