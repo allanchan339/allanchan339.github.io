@@ -51,7 +51,7 @@ Last but not least, VMD driver is provided by Motherboard manufacturer, as follo
 ## Problem
 In MacOS environment, the creation of Windows 11 USB is not easy. The official solution is to use the [Media Creation Tool](https://www.microsoft.com/en-us/software-download/windows11) to create the USB. However, the tool is only available in Windows environment.
 
-The reason is that the Windows 11 ISO file is larger than 4GB. Therefore, the USB is required to be formatted as NTFS. However, MacOS does not support NTFS format. Therefore, the USB cannot be created in MacOS.
+The reason is that the Windows 10/11 ISO file is larger than 4GB. Therefore, the USB is required to be formatted as NTFS. However, MacOS does not support NTFS format. Therefore, the USB cannot be created in MacOS.
 
 The first attempt is to use a ISO burner available in macOS to burn a USB. However, the USB is not recognized in the BIOS as partition of file didn't perform. The reason is that or the `install.wim` is larger than 4 GB, which is not recognizable in FAT32 format. Also, it is not possible to format the USB as NTFS in macOS as it is Microsoft property.
 
@@ -111,27 +111,6 @@ To troubleshoot this error, you could try the following:
 
 If none of these solutions work, you may need to seek further assistance from a technical support professional.
 ```
-## Hardware Checking
-
-To debug the potential error in hardware, some hardware checking is required. The following is the hardware checking procedure. 
-
-### Memory
-I have burned another USB for [memtest86+](https://www.memtest.org/) to test whether the memory has potential error. My memory pass the test.
-
-### SSD
-I have burned another USB for [Ubuntu](https://ubuntu.com/download) to test whether the hard drives has bad sectors to cause the installation failure of Windows 11. 
-
-The following command is used to check the bad sectors in Ubuntu.
-
-```bash
-lsblk 
-sudo badblocks -v /dev/[your hard drive name, e.g sda, nvme0n1]
-```
-
-My hard drives pass the test.
-
-### CPU and Motherboard
-The motherboard is functioning well as the BIOS can be entered. I have also upgraded to the latest BIOS firmware without problem. The CPU is also functioning well as all operation require CPU to process (However, there are [some cases](https://www.reddit.com/r/buildapc/comments/nvbhal/windows_10_install_fails_with_error_0xc0000005/) that report CPU failure is a possible cause).
 
 ## TPM 2.0, Secure Boot, UEFI and PTT
 To install Windows 11, harsh requirement must be fulfilled.
@@ -153,6 +132,13 @@ As the finger print is coded on TPM 2.0 chip (either Physical or Virtual) in the
 
 In my motherboard, a configuration called "Pending Operation" in trusted computing can be found. The only option is "clear TPM". After clearing the TPM, the finger print is removed and the installation can be performed.
 
+Also, the secure boot key should also be reset. The secure boot key is used to verify the integrity of the OS. If the secure boot key is not reset, the installation will be troubled by failure of boot. 
+
+The secure boot key can be reset by the following steps:
+1. Enter BIOS and switch Secure Boot to custom.
+2. Delete old secure key 
+3. Switch the mode to setup and save the configuration.
+
 ## Problem
 The installation will be failed if the TPM is not cleared and new Windows key is provided. The error code is 0xc0000005. The error code 0xc0000005 is a Windows operating system error that is also known as the "Access Violation" error. This error typically occurs when an application attempts to access a memory location that it is not authorized to access. 
 
@@ -161,4 +147,91 @@ In the installation, the error code 0xc0000005 is caused by the finger print in 
 ## Localization of Error
 You can burn a new Windows 10 bootable USB to install in your PC. Before the installation, you must turn off all configuration related to TPM, such as PTT and trusted computing and secure booot etc. If the installation is successful, the problem is localized to the write access in TPM.
 
-# Conclusion
+# Round 2: Debug on Hardware Failure on Windows 10
+
+## Current Status
+The installation of Windows 11 is failed due to the finger print in TPM. The finger print is not authorized to write the new Windows key. Therefore, the installation is failed.
+
+During the installation, my noticable error is coming frequently. The error is 0xC000005. The error code 0xC000005 is a Windows operating system error that is also known as the "Access Violation" error. 
+
+This error typically occurs when an application attempts to access a memory location that it is not authorized to access.
+
+During the installation of Windows 10, this error also occurs infrequently and cause the failure of installation. 
+
+After the success of installation of Windows 10, the error is still coming. When using the Chrome or Edge browser, sometimes the error "status access violation" occurs, which means the browser is not authorized to access the memory location.
+
+Also, in game playing, the Unreal engine also reports the error "Unhandled Exception: EXCEPTION_ACCESS_VIOLATION writing address 0x0000028c16eabeee.". For the REDEngine (Cyberpunk 2077), the game is not able to start. And for Unity Engine, the game is frequnetly crashed. Therefore, it is highly possible that the error is caused by the hardware failure.
+
+## Hardware Checking
+
+When we deal with hardware failure, we should doubt the priority by the following order:
+1. SSD > RAM > Motherboard > CPU
+2. GPU
+3. PSU
+
+The debug process is dependent on the error observed. More detail is described as follows:
+
+### Memory
+I have burned another USB for [memtest86](https://www.memtest86.com/) to test whether the memory has potential error. My memory pass the test.
+
+![圖 5](https://s2.loli.net/2023/05/16/e1ryQN9Fo4zWavb.jpg)  
+
+
+### SSD
+#### Bootable USB
+I have burned another USB for [Ubuntu](https://ubuntu.com/download) to test whether the hard drives has bad sectors to cause the installation failure of Windows 11. 
+
+The following command is used to check the bad sectors in Ubuntu.
+
+```bash
+lsblk 
+sudo badblocks -v /dev/[your hard drive name, e.g sda, nvme0n1]
+```
+
+My hard drives pass the test.
+
+#### In Windows Environment
+The `chkdsk` command can be found in cmd for any Windows OS for SSD, as suggested [here](https://www.crucial.com/support/articles-faq-ssd/my-ssd-has-bad-sectors)
+
+To scan and recover any error in SSD, you may need to open an cmd prompt windows with administrator right, and input 
+
+```
+chkdsk C: /r 
+```
+which will require you to schedule a reboot to proceed the disk checking, as suggested [here](https://www.crucial.com/support/articles-faq-ssd/schedule-a-check-disk-on-drive). 
+
+### GPU
+
+Usually, a GPU will be failed due to bad VRAM chip on the board. Instead of the GPU itself. 
+
+Some utitlity can be used to examine the GPU. The most reliable one for NVIDIA graphic card is the [Mats](https://www.youtube.com/watch?v=z9zgvtPF7c4), which is image that need to burn to USB. 
+
+However, the Mats is not able to detect the error in my GPU (RTX4090) as the tool is too old. You may find the latest version in [taobao](https://item.taobao.com/item.htm?spm=a230r.1.14.18.74ec286eikhmwR&id=693479383221&ns=1&abbucket=11#detail) that support 4090 GPU. 
+
+Luckily, I have my old GPU (RTX2070) from my old PC. I have replaced the GPU and the error is still coming. Therefore, the GPU is not the cause of the error.
+
+To double confirm, I have also taken out all GPU and enable the internal GPU (Intel UHD 770) from my CPU (Intel i9-13900K). The error still persist.
+
+### PSU
+Usually, PSU failure will cause the black screen, system power off suddenly, or system reboot suddenly. However, in my cases, the error is memory access violation error and no power off or reboot is observed. Therefore, the PSU is not the cause of the error.
+
+### CPU 
+
+To test the function of Intel CPU, Intel has provided us with a simple tools [Intel® Processor Diagnostic Tool](https://www.intel.com/content/www/us/en/download/15951/intel-processor-diagnostic-tool.html). Only the Windows version has provided. 
+
+The tool is able to test the function of CPU in Windows platform. However, I always doubt that whether this test is valid as the test is not performed in a standalone environment, like memtest86 did. 
+
+Anyway, The test is passed. CPU is the most difficult part to be failed (by experience). And Intel accepts International RMA so that we can just override the vendor in Hong Kong. Let not bother this part for now.
+
+### Motherboard
+The last part to be considered is the motherboard. The motherboard is the most difficult part to examine. More professional tool is subjected to test. It is far away from my expertise. 
+
+However, the memory test keep showning positive results. Therefore, I doubt the error is caused by motherboard. Regarding memory access. The following components are related:
+1. CPU Memory Controller
+2. Motherboard BUS between RAM and CPU
+3. RAM chip itself
+
+The CPU is passed. The RAM is passed. Therefore, the motherboard is the most possible cause of the error.
+
+I have planning to require RMA for the motherboard. 
+
