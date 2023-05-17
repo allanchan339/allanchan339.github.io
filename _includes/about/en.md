@@ -11,8 +11,16 @@ Hello, I am [Allan Chan](https://www.linkedin.com/in/cheuk-yiu-chan-54491a13a/).
 
 My research interests lie in artificial intelligence and computer vision, with a focus on machine learning techniques for image and video analysis. I hope to contribute to the advancement of AI and its applications to tackle real-world problems.
 
+## Education 
+
+- MPhil in Electronic and Information Engineering, The Hong Kong Polytechnic University, 2021 - Present
+  - Supervisor: [Prof. Wan-Chi Siu](http://www.eie.polyu.edu.hk/~wcsiu/) and [Dr. Chris Y. H. Chan](http://www.eie.polyu.edu.hk/~enyhchan/)
+- BEng (Hons) in Electronic and Information Engineering, The Hong Kong Polytechnic University, 2017 - 2021
+  - First Class Honours
+  - CGPA: 3.99
+
 ## Organization 
-I received a First-Class Honours BEng degree in Electronic and Information Engineering from PolyU. I have also served in various organizations, including:
+I have also served in various organizations, including:
 - Internal Vice President @ HKPUSU Catholic Society 24th
 - [Class fellow @ Millennium Campus Network](https://www.millenniumfellows.org/fellow/2020/hkpu/cheuk-yiu-chan)
 - [Hub Member @ Hub of the Future](https://hubforthefuture.hkfyg.org.hk/2021/09/14/hsbc-scholars-day-2021/)
