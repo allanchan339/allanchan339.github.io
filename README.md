@@ -7,6 +7,42 @@
 I obtained this template from the [al-folio](https://github.com/alshedivat/al-folio) project.
 Big thanks to the maintainers listed below for developing this beautiful site template and keeping it open-source.
 
+## Build locally
+
+This site is built with Jekyll and Bundler.
+
+### Prerequisites
+
+- `rbenv` installed
+- Ruby `3.4.9` installed in `rbenv`
+- Bundler gems installed from `Gemfile.lock`
+
+### Setup (first time only)
+
+```bash
+eval "$(rbenv init - zsh)"
+rbenv local 3.4.9
+bundle install
+```
+
+### Build command
+
+Use this command to build the static site into `_site/`:
+
+```bash
+eval "$(rbenv init - zsh)" && rbenv local 3.4.9 && bundle exec jekyll build
+```
+
+### Run local preview server
+
+Use this command to run a local preview server:
+
+```bash
+eval "$(rbenv init - zsh)" && rbenv local 3.4.9 && bundle exec jekyll serve --host 127.0.0.1 --port 4000
+```
+
+Then open [http://127.0.0.1:4000](http://127.0.0.1:4000).
+
 ### Maintainers
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
