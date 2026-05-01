@@ -1,13 +1,13 @@
 ---
 layout: post
-title: My First Post
+title: Why I built this blog?
 date: 2026-05-01 21:00:00 +0800
 description: Why I built this website and what I will document here.
 tags: [intro, ai, quant]
 categories: [blog]
 ---
 
-Welcome to my first post on this site.
+Why I built this blog?
 
 I built this website because I want one place to record my work and my growth clearly.
 
