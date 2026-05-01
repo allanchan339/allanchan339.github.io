@@ -6,7 +6,7 @@ subtitle:
 
 profile:
   align: right
-  image: prof_pic.jpg
+  image: allan_gen.png
   image_circular: false # crops the image to make it circular
   #address: >
   #  <p>Philadelphia, PA</p>
