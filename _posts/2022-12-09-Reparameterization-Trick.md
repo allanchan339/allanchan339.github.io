@@ -4,7 +4,7 @@ title: Reparameterization Trick
 date: 2022-12-09 00:00:00 +0800
 description: Notes on the reparameterization trick in VAE and diffusion.
 tags: [ai, math, diffusion, vae]
-categories: [blog]
+categories: [research]
 ---
 
 ### Intuition Figure
