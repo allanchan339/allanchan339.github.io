@@ -24,13 +24,20 @@ Ensure each edited post follows current metadata conventions, renders math corre
 - Do not mass-convert display blocks
 - Front matter must be aligned before math checks and should follow the current post format:
   - keep: `layout`, `title`, `date`, `description`, `tags`, `categories`
+  - category taxonomy for this repo:
+    - `research`: paper reviews, derivations, model/code deep dives, technical notes
+    - `journey`: learning logs, progress journals, process updates
+    - `bug-fixes`: debugging notes, workaround writeups, incident-style fixes
+    - `reflection`: motivation, retrospectives, personal thoughts and summaries
+  - choose the single best-fit category from the list above unless the user requests otherwise
+  - if the user explicitly specifies a category, always use the user-specified category value
   - expected style example:
     - `layout: post`
     - `title: "Code Review: Denoising Diffusion Probabilistic Models (DDPM)"`
     - `date: 2023-01-10 00:00:00 +0800`
     - `description: ...`
     - `tags: [ai, review, diffusion, generation]`
-    - `categories: [blog]`
+    - `categories: [research]`
   - remove legacy/non-standard fields when aligning format (e.g. `mathjax: true` for this repo's current post style)
 
 ## Workflow
@@ -68,6 +75,7 @@ Ensure each edited post follows current metadata conventions, renders math corre
 ## Validation Checklist
 
 - [ ] Front matter matches project post style
+- [ ] `categories` uses current taxonomy (`research`, `journey`, `bug-fixes`, `reflection`)
 - [ ] Opening and closing front matter `---` delimiters are intact
 - [ ] `mathjax: true` removed when doing format-alignment cleanup
 - [ ] Legacy metadata fields removed when aligning to current post style
@@ -106,7 +114,7 @@ title: ...
 date: 2022-12-21 00:00:00 +0800
 description: ...
 tags: [ai, review]
-categories: [blog]
+categories: [research]
 ---
 ```
 
