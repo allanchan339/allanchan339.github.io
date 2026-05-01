@@ -4,7 +4,7 @@ title: Why I built this blog?
 date: 2026-05-01 21:00:00 +0800
 description: Why I built this website and what I will document here.
 tags: [intro, ai, quant]
-categories: [blog]
+categories: [reflection]
 ---
 
 Why I built this blog?
@@ -15,7 +15,7 @@ I want to document four things:
 - research
 - journey
 - bug fixes and workarounds
-- progress and reflection
+- reflection & progress
 
 I have tried sharing my ideas and notes on Reddit, X, Threads, and LinkedIn. They are useful for quick updates, but they cannot fit everything I need. For example, I often need proper math display, PPT showcase, and embedded PDF rendering. Those are important for how I think, build, and explain technical work.
 

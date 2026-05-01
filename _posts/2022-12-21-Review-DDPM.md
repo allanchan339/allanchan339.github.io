@@ -4,7 +4,7 @@ title: "Review: Denoising Diffusion Probabilistic Models (DDPM)"
 date: 2022-12-21 00:00:00 +0800
 description: Review notes on DDPM forward and reverse diffusion processes.
 tags: [ai, review, diffusion, generation]
-categories: [blog]
+categories: [research]
 ---
 # What are Diffusion Models?
 
