@@ -11,6 +11,14 @@ Ensure inline math renders correctly in this repo and keep post front matter con
 
 ## Project Rules
 
+- **Critical safety checks (must not break):**
+  - Keep valid YAML front matter delimiters exactly:
+    - first line must be `---`
+    - closing delimiter `---` must remain after metadata
+  - Never remove or alter opening/closing front matter delimiters when editing metadata
+- Inline math delimiter format for this repo is escaped:
+  - use `\\( ... \\)` (double-backslash form in markdown source)
+  - do **not** use `\(...\)` single-backslash form
 - Inline math: use `\\( ... \\)` (not \( \) as markdown will not render correctly)
 - Display math: keep existing format (`$$ ... $$` or `\[ ... \]`) if already rendering correctly
 - Do not mass-convert display blocks
@@ -24,22 +32,41 @@ Ensure inline math renders correctly in this repo and keep post front matter con
 2. Check front matter format first:
    - align keys with current post convention used in recent posts
    - remove `mathjax: true` if present and format alignment is requested
+   - verify both front matter delimiters `---` still exist after edits
 3. Find inline formulas written as `$...$`.
 4. Convert only inline delimiters:
    - `$...$` -> `\\(...\\)`
+   - confirm converted text is literally `\\(...\\)` in file content
 5. Do not modify display math blocks unless user asks.
-6. Rebuild and verify:
-   - `bundle exec jekyll build`
-   - confirm build succeeds and inline formulas render as math.
+6. Run pipeline validation (must complete end-to-end):
+   - Build command:
+     - `eval "$(rbenv init - zsh)" && rbenv local 3.4.9 && bundle exec jekyll build`
+   - If build fails:
+     - read the error carefully
+     - fix the reported issue (YAML front matter, math delimiter typo, missing quote, etc.)
+     - run the same build command again
+     - repeat until build succeeds
+7. After build succeeds, verify page rendering for each edited post:
+   - derive the local page URL from filename date + slug, e.g. `_posts/2022-12-21-DDPM-Bayes.md` -> `http://127.0.0.1:4000/blog/2022/12/21/ddpm-bayes.html`
+   - open/fetch the page and confirm:
+     - inline math is rendered (not raw LaTeX text)
+     - display math blocks render correctly
+     - no broken formatting around equations
+8. If rendering is still wrong:
+   - fix markdown/math delimiters in source
+   - rerun pipeline validation from step 6 until both build and render checks pass
 
 ## Validation Checklist
 
 - [ ] Front matter matches project post style
+- [ ] Opening and closing front matter `---` delimiters are intact
 - [ ] `mathjax: true` removed when doing format-alignment cleanup
 - [ ] No inline `$...$` remains in edited sections
-- [ ] Inline math uses `\\(...\\)`
+- [ ] Inline math uses escaped delimiters `\\(...\\)` (double-backslash in source)
 - [ ] Existing display math blocks are preserved
 - [ ] Site build succeeds
+- [ ] Corresponding local page(s) checked for render/display issues after successful build
+- [ ] No raw LaTeX appears on checked page(s)
 
 ## Common Fix Patterns
 
