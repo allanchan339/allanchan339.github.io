@@ -1,13 +1,13 @@
 ---
-name: fix-jekyll-inline-math
-description: Fix inline LaTeX rendering and front matter consistency in Jekyll/al-folio markdown posts. Use when inline math appears as raw text or when post metadata differs from the repo's post format.
+name: jekyll-post-quality-workflow
+description: End-to-end Jekyll post quality workflow: align front matter format, normalize math notation, run build, verify render, and iteratively fix issues until the page looks correct.
 disable-model-invocation: true
 ---
 
-# Fix Jekyll Inline Math
+# Jekyll Post Quality Workflow
 
 ## Goal
-Ensure inline math renders correctly in this repo and keep post front matter consistent with current post conventions.
+Ensure each edited post follows current metadata conventions, renders math correctly, builds successfully, and visually looks correct in the generated page.
 
 ## Project Rules
 
@@ -22,16 +22,24 @@ Ensure inline math renders correctly in this repo and keep post front matter con
 - Inline math: use `\\( ... \\)` (not \( \) as markdown will not render correctly)
 - Display math: keep existing format (`$$ ... $$` or `\[ ... \]`) if already rendering correctly
 - Do not mass-convert display blocks
-- Front matter should follow the current post format:
+- Front matter must be aligned before math checks and should follow the current post format:
   - keep: `layout`, `title`, `date`, `description`, `tags`, `categories`
+  - expected style example:
+    - `layout: post`
+    - `title: "Code Review: Denoising Diffusion Probabilistic Models (DDPM)"`
+    - `date: 2023-01-10 00:00:00 +0800`
+    - `description: ...`
+    - `tags: [ai, review, diffusion, generation]`
+    - `categories: [blog]`
   - remove legacy/non-standard fields when aligning format (e.g. `mathjax: true` for this repo's current post style)
 
 ## Workflow
 
 1. Open target post in `_posts/*.md`.
-2. Check front matter format first:
+2. **Align front matter first**:
    - align keys with current post convention used in recent posts
    - remove `mathjax: true` if present and format alignment is requested
+   - remove legacy fields not used in current style (e.g. `author`, `header-style`, `catalog`, `comments`) when doing alignment cleanup
    - verify both front matter delimiters `---` still exist after edits
 3. Find inline formulas written as `$...$`.
 4. Convert only inline delimiters:
@@ -55,18 +63,21 @@ Ensure inline math renders correctly in this repo and keep post front matter con
 8. If rendering is still wrong:
    - fix markdown/math delimiters in source
    - rerun pipeline validation from step 6 until both build and render checks pass
+9. Continue iterating until the page is visually correct and stable (no raw LaTeX, no broken equations, no malformed front matter).
 
 ## Validation Checklist
 
 - [ ] Front matter matches project post style
 - [ ] Opening and closing front matter `---` delimiters are intact
 - [ ] `mathjax: true` removed when doing format-alignment cleanup
+- [ ] Legacy metadata fields removed when aligning to current post style
 - [ ] No inline `$...$` remains in edited sections
 - [ ] Inline math uses escaped delimiters `\\(...\\)` (double-backslash in source)
 - [ ] Existing display math blocks are preserved
 - [ ] Site build succeeds
 - [ ] Corresponding local page(s) checked for render/display issues after successful build
 - [ ] No raw LaTeX appears on checked page(s)
+- [ ] Repeat fixes/build/render checks until page quality is acceptable
 
 ## Common Fix Patterns
 
@@ -112,4 +123,4 @@ We minimize \\(L(\theta)\\) and estimate \\(p(x_t|x_0)\\).
 
 ## Scope
 
-Apply this skill to technical posts under `_posts/` when inline math is not rendering or when post metadata needs to match the repository's current post format.
+Apply this skill to technical posts under `_posts/` whenever post quality updates are needed, including front matter alignment, math-notation normalization, build validation, render checks, and iterative bug fixing.
