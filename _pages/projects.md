@@ -1,7 +1,7 @@
 ---
 layout: page
-title: blog
-permalink: /blog/
+title: projects
+permalink: /projects/
 description: 
 nav: true
 nav_order: 3

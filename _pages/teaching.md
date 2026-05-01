@@ -3,7 +3,7 @@ layout: page
 permalink: /teaching/
 title: teaching
 description: Teaching materials for math and science
-nav: true
+nav: false
 nav_order: 4
 ---
 
