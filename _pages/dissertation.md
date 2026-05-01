@@ -3,7 +3,7 @@ layout: page
 permalink: /dissertation/
 title: dissertation
 description: my dissertation topic
-nav: true
+nav: false
 nav_order: 2
 ---
 
