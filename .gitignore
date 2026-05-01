@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Jekyll build output and caches
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+.jekyll-multiple-languages-plugin/
+
+# Ruby/Bundler local artifacts
+.bundle/
+vendor/bundle/
+
+# Misc local caches
+.tweet-cache/
