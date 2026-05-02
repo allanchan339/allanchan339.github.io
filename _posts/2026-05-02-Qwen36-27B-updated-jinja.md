@@ -2,6 +2,8 @@
 layout: post
 title: "qwen3.6-enhanced.jinja: CoT leakage into tool turns and why preserve_thinking works now"
 date: 2026-05-02 00:00:00 +0800
+# Lock URL to calendar date in filename. Without this, UTC day for midnight +08 can become /2026/05/01/… on some builds; /2026/05/02/… would 404.
+permalink: /bug-fixes/2026/05/02/Qwen36-27B-updated-jinja.html
 description: "Why Qwen 3.6 with qwen3.5-enhanced.jinja forced preserve_thinking=false, and how qwen3.6-enhanced.jinja restores full Qwen 3.6-series capability—self-healing think/tool boundaries, safe preserve_thinking. Launch recipe tested on vLLM v0.19.0."
 tags: [vllm, qwen, tool-calling, llm, jinja, agent, inference]
 categories: [bug-fixes]
