@@ -2,14 +2,16 @@
 layout: post
 title: "Claude Code with local vLLM: client validation, model aliases, and a working settings.json"
 date: 2026-04-19 00:00:00 +0800
-description: "Debugging Claude Code against a local Qwen 3.5-27B vLLM server: why ANTHROPIC_CUSTOM_MODEL_OPTION and common tutorials fail, what the client actually validates, and the env + settings.json combination that works."
+description: "Run Claude Code against local vLLM without Anthropic API access: why common env-only recipes fail, the alias + settings.json pattern that works, and when this matters if you cannot register or use the Claude API."
 tags: [claude-code, vllm, llm, local-inference, anthropic-api]
 categories: [bug-fixes]
 ---
 
-Most write-ups say you only need `ANTHROPIC_CUSTOM_MODEL_OPTION` and `ANTHROPIC_BASE_URL`. **That path does not work** for pointing Claude Code at a **local OpenAI-compatible** vLLM instance: the CLI still runs **client-side validation** and can reject the model **before** your server sees traffic. This post is what I wish I had read first: how I traced the failure in **`cli.js`**, which **four configuration ideas** must line up together, and a **`~/.claude/settings.json`** I actually tested end-to-end.
+**Straight story:** I wanted Claude Code to talk to **my own** model on **vLLM**, not to Anthropic’s hosted API. Tutorials usually say: set `ANTHROPIC_CUSTOM_MODEL_OPTION` and `ANTHROPIC_BASE_URL`. **That was not enough.** The CLI applies **its own checks** and can fail with “issue with the selected model” **before** meaningful traffic hits your server. The fix is a small set of aligned settings: **tier aliases** (`"model": "sonnet"` + `ANTHROPIC_DEFAULT_*_MODEL`), a **root** base URL (no extra `/v1`), **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`**, and a **dummy** `ANTHROPIC_AUTH_TOKEN` so vLLM still gets a header.
 
-**vLLM / Qwen background:** If you are still stabilizing Qwen 3.5 on vLLM (Jinja templates, `qwen3_xml`, and so on), I summarized that separately in this [vLLM / Qwen 3.5 thread](https://www.reddit.com/r/Vllm/comments/1skks8n/qwen_35_27b35ba3b_tool_calling_issues_why_it/). Everything below assumes **vLLM is already serving** and answers to a simple `curl` health check.
+**Why I care (and maybe you do too):** with **`ANTHROPIC_BASE_URL`** pointed at **local vLLM** and a **placeholder** token, **model traffic does not use the real Claude API**—no Anthropic API key or inference billing for that path. That matters if you **cannot register**, are **out of region**, or **cannot obtain API access**, but still want the **Claude Code** loop against a model you control. (You still install and run **Claude Code**; this is about **where completions are served**, not a different product.)
+
+**vLLM / Qwen:** Tooling and template notes for Qwen 3.5 on vLLM are in this [vLLM / Qwen 3.5 thread](https://www.reddit.com/r/Vllm/comments/1skks8n/qwen_35_27b35ba3b_tool_calling_issues_why_it/). Below assumes **vLLM is already up** and passes a simple `curl` check.
 
 # Baseline: vLLM responds, Claude Code does not (yet)
 
@@ -21,7 +23,7 @@ curl http://127.0.0.1:8000/v1/chat/completions -X POST \
 # Works
 ```
 
-So I expected wiring Claude Code to be a small config tweak. It was not: I had to try several recipes from docs, issues, and forums, then read **Claude Code’s own bundle** to see why validation failed.
+So I expected a quick env change. Instead I iterated through docs and issues, then grepped **`cli.js`** to see why validation fired.
 
 # The trap: `ANTHROPIC_CUSTOM_MODEL_OPTION`
 
@@ -119,7 +121,9 @@ claude "test"
 
 If this fails, reconcile the table above **in order** before chasing unrelated flags.
 
-# Debugging sequence I actually went through
+# Debugging sequence (short)
+
+If something below matches your error, fix that first; the full **`settings.json`** block is the target state.
 
 **Attempt 1 — vLLM-style base URL with `/v1`**
 
@@ -257,14 +261,14 @@ Before invoking `claude`:
 
 # Summary
 
-1. **`ANTHROPIC_CUSTOM_MODEL_OPTION`** did **not** solve local vLLM for me the way tutorials imply; it is a **major time sink** if you stop there.
-2. Use **built-in aliases** (**`"model": "sonnet"`**) and **`ANTHROPIC_DEFAULT_*_MODEL`** to map them to **`Qwen3.5-27B`** (or your served name).
-3. Keep **`ANTHROPIC_BASE_URL`** at the **root** of the server; let the client append **`/v1/messages`**.
-4. Align **vLLM `--served-model-name`** with those env strings **exactly**.
-5. Set **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`** to avoid **validation roulette** on local ids.
-6. Prefer **`ANTHROPIC_AUTH_TOKEN`** over **`ANTHROPIC_API_KEY`** with my vLLM setup.
-7. When docs and behavior diverge, **reading the shipped `cli.js`** settled the question faster than more SEO’d config snippets.
-8. **Incomplete tutorials** often omit **one** of alias mapping, base URL shape, or **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`**—any single miss is enough to make the whole setup look “broken.”
+1. **Accessibility:** Pointing Claude Code at **local vLLM** means **Anthropic API access is not required for the model layer**—useful when you **cannot register**, **cannot get API keys**, or want **zero** hosted inference spend. You still use the CLI; completions hit **your** server.
+2. **`ANTHROPIC_CUSTOM_MODEL_OPTION`** alone did **not** match what I needed; treat tier **aliases** + env as the real fix.
+3. **`"model": "sonnet"`** (or another tier label) plus **`ANTHROPIC_DEFAULT_*_MODEL`** → your **`Qwen3.5-27B`** (or served name).
+4. **`ANTHROPIC_BASE_URL`** stops at **`http://host:port`**; the client adds **`/v1/messages`**.
+5. **`--served-model-name`** matches those env strings **exactly** (watch **`/`** in ids).
+6. **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`** avoids **intermittent** validation against Anthropic’s catalog.
+7. **`ANTHROPIC_AUTH_TOKEN`** (e.g. **`dummy`**) worked better than **`ANTHROPIC_API_KEY`** with my vLLM.
+8. When docs and **`cli.js`** disagree, the bundle wins; most bad copy-pastes omit **one** of alias mapping, base URL shape, or the traffic flag.
 
 # Resources
 
@@ -273,4 +277,4 @@ Before invoking `claude`:
 - [vLLM docs — Claude Code integration](https://docs.vllm.ai/en/latest/serving/integrations/claude_code/) (useful but incomplete versus real client behavior)
 - Related GitHub issues: **#18025**, **#23266**, **#34821**
 
-If you are wiring Claude Code to a **local** endpoint, start from the **`settings.json`** block and the checklist above—especially **alias mapping**, **base URL shape**, and **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`**—before spending more cycles on **`ANTHROPIC_CUSTOM_MODEL_OPTION`**.
+If you want **Claude Code’s workflow** without **Claude API** inference, start from the **`settings.json`** block and checklist: **aliases**, **root base URL**, **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`**, then align vLLM’s served name. That order saves time versus chasing **`ANTHROPIC_CUSTOM_MODEL_OPTION`** alone.
