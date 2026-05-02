@@ -1,0 +1,6 @@
+{%- if include.category == "bug-fixes" -%}
+Bug-fixes & Workaround
+{%- else -%}
+{%- assign category_words = include.category | replace: "-", " " | split: " " -%}
+{%- for word in category_words -%}{{ word | capitalize }}{% unless forloop.last %} {% endunless %}{%- endfor -%}
+{%- endif -%}

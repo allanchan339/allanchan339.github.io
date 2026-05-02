@@ -31,8 +31,12 @@ layout: default
       {%- if categories != "" %}
       &nbsp; &middot; &nbsp;
         {% for category in page.categories -%}
+        {%- assign category_display = category -%}
+        {%- if category == "bug-fixes" -%}
+        {%- assign category_display = "Bug-fixes & Workaround" -%}
+        {%- endif -%}
         <a href="{{ category | slugify | prepend: '/blog/category/' | prepend: site.baseurl}}">
-          <i class="fas fa-tag fa-sm"></i> {{ category }}</a> &nbsp;
+          <i class="fas fa-tag fa-sm"></i> {{ category_display }}</a> &nbsp;
           {% endfor -%}
       {% endif %}
 
