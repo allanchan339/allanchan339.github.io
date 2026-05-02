@@ -129,6 +129,28 @@ We minimize $L(\theta)$ and estimate $p(x_t|x_0)$.
 We minimize \\(L(\theta)\\) and estimate \\(p(x_t|x_0)\\).
 ```
 
+### Pseudocode / algorithm blocks in `aligned` (KaTeX / MathJax)
+
+In `\begin{aligned}...\end{aligned}`, each `&` starts a **new alignment column** (pairs of right/left columns in amsmath style). Using `&&` on a line does **not** mean “indent once”; it advances to the next column, so the line is pushed far to the right with a large empty gap.
+
+**Do:** keep one leading `&` per row and use `\quad` (or `\qquad`) for visual indent on nested lines (loop bodies, `for` bodies).
+
+**Before (broken layout)**
+```latex
+& \text{repeat} \\
+&& \text{Sample } \ldots \\
+&& x = f(y);
+```
+
+**After**
+```latex
+& \text{repeat} \\
+&\quad \text{Sample } \ldots \\
+&\quad x = f(y);
+```
+
+When auditing posts, if algorithm blocks look wildly indented in the browser, check for `&&` line starts inside `aligned` and replace with `&\quad` (or `alignedat` with explicit column count if you need true multi-column align).
+
 ## Scope
 
 Apply this skill to technical posts under `_posts/` whenever post quality updates are needed, including front matter alignment, math-notation normalization, build validation, render checks, and iterative bug fixing.
