@@ -15,7 +15,7 @@ Public write-ups on Qwen 3.5 often emphasize reasoning quality and slow time-to-
 
 The run started from the official `qwen3.5_official.jinja` template. For the first handful of tool turns, output looked fine. Then failures clustered:
 
-- Tool calls appeared **mid-thought**, including closing **`</think>`** without having opened a matching `<think>` tag.
+- Tool calls appeared **mid-thought**, including closing **`</redacted_thinking>`** without having opened a matching **`<redacted_thinking>`** tag.
 - **Premature stops** in the middle of XML tool calls—for example, the model produced a line like “Let me do that for you:” and then **stopped** without finishing the tool payload.
 - **Historical thinking blocks leaked into context**, so later turns saw polluted reasoning boundaries and inconsistent tool formatting.
 
@@ -185,7 +185,7 @@ One **continuous agentic session** lasted about **1h 9m** on this configuration:
 - **M2.5-style interleaved thinking** remained coherent across the run.
 - The model **autonomously** implemented a **production-oriented knowledge-graph platform** (**FastAPI + React**); **18 minutes** of that session were **uninterrupted** end-to-end work **without tool-calling failures**—the sort of reliability that matters for real agents rather than toy demos.
 
-The stack has also remained **stable for weeks** after that validation period in the author’s deployment. As always, numbers are **tied to one hardware topology** and one workload mix; they are included as **evidence**, not a universal benchmark.
+The stack has also remained **stable for weeks** after that validation period in **my** deployment. As always, numbers are **tied to one hardware topology** and one workload mix; they are included as **evidence**, not a universal benchmark.
 
 # Summary
 
@@ -201,4 +201,4 @@ The stack has also remained **stable for weeks** after that validation period in
 - **Concrete long-session example:** [qwen_own_project](https://github.com/allanchan339/qwen_own_project).
 - **Earlier discussion:** [Reddit — tool calling fixes thread](https://www.reddit.com/r/LocalLLaMA/comments/1sdhvc5/qwen_35_tool_calling_fixes_for_agentic_use_whats/).
 
-If you run **Qwen 3.5 27B/35B-class** models for **agents** and see **silent** tool failures—**truncation**, **wrong boundaries**, or **thinking leakage**—inspect the **Jinja chat template** first. In this experience it was **almost always** the dominant factor: the **stock template** does not cover the **failure modes smaller checkpoints** actually hit.
+If you run **Qwen 3.5 27B/35B-class** models for **agents** and see **silent** tool failures—**truncation**, **wrong boundaries**, or **thinking leakage**—inspect the **Jinja chat template** first. **In my experience** it was **almost always** the dominant factor: the **stock template** does not cover the **failure modes smaller checkpoints** actually hit.
