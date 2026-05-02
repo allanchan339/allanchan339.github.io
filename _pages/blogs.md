@@ -72,6 +72,7 @@ display_categories: [research, journey, bug-fixes, reflection]
         max-height: none;
       }
     }
+
   </style>
 {%- assign posts_count = site.posts | size -%}
 {%- if posts_count > 0 -%}

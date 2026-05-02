@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: 
+subtitle:
 
 profile:
   align: right
@@ -11,9 +11,9 @@ profile:
   #address: >
   #  <p>Philadelphia, PA</p>
 
-news: false  # includes a list of news items
+news: false # includes a list of news items
 selected_papers: false # includes a list of papers marked as "selected={true}"
-social: true  # includes social icons at the bottom of the page
+social: true # includes social icons at the bottom of the page
 ---
 
 I am an MPhil graduate in Electrical and Electronic Engineering from The Hong Kong Polytechnic University, and I love everything related to AI, data, and quant. I am currently building my own end-to-end quant research infrastructure and running live research workflows.

@@ -9,5 +9,5 @@ nav_order: 2
 
 This page will describe my work on DNA simulations.
 
-⚠️  This work is currently in-progress and unpublished. I will share more once my first paper 
+⚠️ This work is currently in-progress and unpublished. I will share more once my first paper
 has been accepted at a journal. Stay tuned!
