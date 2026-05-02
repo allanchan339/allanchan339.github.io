@@ -86,7 +86,7 @@ def Downsample(dim, dim_out=None):
 ```
 
 ## Positioning Encoding 
-Inspired by the Transformer [(Vaswani et al., 2017)](https://arxiv.org/abs/1706.03762), as the parameters of the neural network are shared across time (noise level), the authors employ sinusoidal position embeddings to encode $t$. This makes the neural network "know" at which particular time step (noise level) it is operating, for every image in a batch.
+Inspired by the Transformer [(Vaswani et al., 2017)](https://arxiv.org/abs/1706.03762), as the parameters of the neural network are shared across time (noise level), the authors employ sinusoidal position embeddings to encode \\(t\\). This makes the neural network "know" at which particular time step (noise level) it is operating, for every image in a batch.
 
 ```python
 class SinusoidalPositionEmbeddings(nn.Module):
@@ -401,11 +401,11 @@ class Unet(nn.Module):
 
 # Defining the forward diffusion process
 ## Schedules
-The forward diffusion process gradually adds noise to an image from the real distribution, in a number of time steps $T$. This happens according to a variance schedule. The original DDPM authors employed a **linear schedule**:
+The forward diffusion process gradually adds noise to an image from the real distribution, in a number of time steps \\(T\\). This happens according to a variance schedule. The original DDPM authors employed a **linear schedule**:
 
-> We set the forward process variances to constants increasing linearly from $\beta_1 = 10^{-4} \text{ to } \beta_T = 0.02$
+> We set the forward process variances to constants increasing linearly from \\(\beta_1 = 10^{-4} \text{ to } \beta_T = 0.02\\)
 
-Below, we define various schedules for the $T$ timesteps (we'll choose one later on).
+Below, we define various schedules for the \\(T\\) timesteps (we'll choose one later on).
 
 ```python
 def cosine_beta_schedule(timesteps, s=0.008):
@@ -439,7 +439,7 @@ def sigmoid_beta_schedule(timesteps):
 ![圖 1](https://s2.loli.net/2023/01/12/q8yHSb6cZrAhEm9.png)  
 ![圖 2](https://s2.loli.net/2023/01/12/v9T6qcgL4sfBuhx.png)  
 
-To start with, let's use the linear schedule for $T=300$ time steps and define the various variables from the $\beta_t$ which we will need, such as the cumulative product of the variances $\bar{\alpha}_t$. Each of the variables below are just 1-dimensional tensors, storing values from $t$ to $T$. Importantly, we also define an extract function, which will allow us to extract the appropriate $t$ index for a batch of indices.
+To start with, let's use the linear schedule for \\(T=300\\) time steps and define the various variables from the \\(\beta_t\\) which we will need, such as the cumulative product of the variances \\(\bar{\alpha}_t\\). Each of the variables below are just 1-dimensional tensors, storing values from \\(t\\) to \\(T\\). Importantly, we also define an extract function, which will allow us to extract the appropriate \\(t\\) index for a batch of indices.
 
 ```python
 timesteps = 300
@@ -466,7 +466,7 @@ posterior_variance = betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
 
 By Pytorch we have a good function to calculate the cumulative product of elements, 
 
-Therefore we can calculate $\bar{\alpha_t}$ as:
+Therefore we can calculate \\(\bar{\alpha_t}\\) as:
 ```python
 betas = linear_beta_schedule(timesteps=10)
 alphas = 1. - betas
@@ -475,7 +475,7 @@ alphas_cumprod = torch.cumprod(alphas, axis=0)
         0.9037])
 ```
 
-To fix at $\alpha_0 = 1$ s.t. $x_0 = \alpha_0 x_0 + \beta_0\epsilon_0$ to form $\bar{\alpha}_{t-1}$ we need: 
+To fix at \\(\alpha_0 = 1\\) s.t. \\(x_0 = \alpha_0 x_0 + \beta_0\epsilon_0\\) to form \\(\bar{\alpha}_{t-1}\\) we need: 
 ```python
 alphas_cumprod_prev = F.pad(alphas_cumprod[:-1], (1, 0), value=1.0)
 > tensor([1.0000, 0.9999, 0.9976, 0.9931, 0.9864, 0.9776, 0.9667, 0.9537, 0.9389,
@@ -510,7 +510,7 @@ image = Image.open(requests.get(url, stream=True).raw)
 ```
 ![圖 3](https://s2.loli.net/2023/01/13/vx2Fgrh7bOHqmQM.png) 
 
-In addition, we need to build an function to transform PIL image with shape 128 dim to tensor $\in [-1,1]$ or vice versa.
+In addition, we need to build an function to transform PIL image with shape 128 dim to tensor \\(\in [-1,1]\\) or vice versa.
 ```python
 from torchvision.transforms import Compose, ToTensor, Lambda, ToPILImage, CenterCrop, Resize
 
@@ -672,9 +672,9 @@ The sampling algorithm is defined as follows:
 
 ![圖 8](https://s2.loli.net/2023/01/14/c1vmlpMGKt2AfUW.png)  
 
-- Generating new images from a diffusion model happens by reversing the diffusion process: we start from $T$, where we sample pure noise from a Gaussian distribution, 
-- and then use our neural network to gradually denoise it (using the conditional probability it has learned), until we end up at time step $t=0$. 
-- As shown above, we can derive a slighly less denoised image $\mathbf{x}_{t-1}$ ​by plugging in the reparametrization of the mean, using our noise predictor. Remember that the variance is known ahead of time.
+- Generating new images from a diffusion model happens by reversing the diffusion process: we start from \\(T\\), where we sample pure noise from a Gaussian distribution, 
+- and then use our neural network to gradually denoise it (using the conditional probability it has learned), until we end up at time step \\(t=0\\). 
+- As shown above, we can derive a slighly less denoised image \\(\mathbf{x}_{t-1}\\) ​by plugging in the reparametrization of the mean, using our noise predictor. Remember that the variance is known ahead of time.
 
 ```python
 @torch.no_grad()
