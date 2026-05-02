@@ -45,7 +45,7 @@ $$
 q_\sigma\left(\boldsymbol{x}_{t-1} \mid \boldsymbol{x}_t, \boldsymbol{x}_0\right)=\mathcal{N}\left(\sqrt{\alpha_{t-1}} \boldsymbol{x}_0+\sqrt{1-\alpha_{t-1}-\sigma_t^2} \cdot \frac{\boldsymbol{x}_t-\sqrt{\alpha_t} \boldsymbol{x}_0}{\sqrt{1-\alpha_t}}, \sigma_t^2 \boldsymbol{I}\right)
 $$
 
-where all \\(\alpha\\) is equal to \\(\bar{\alpha}\\) in [DDPM](2022-12-21-Review-DDPM.md).
+where all \\(\alpha\\) is equal to \\(\bar{\alpha}\\) in [DDPM](/research/2022/12/20/Review-DDPM.html).
 
 and 
 
@@ -146,7 +146,7 @@ $$
 $$
 
 ## Freedom on Variance \\(\sigma^2_t\\)
-We can observe that we have a new hyperparameter \\(\sigma^2_t\\). We can take some example from [previous blog](2022-12-21-DDPM-Bayes.md).
+We can observe that we have a new hyperparameter \\(\sigma^2_t\\). We can take some example from [previous blog](/research/2023/02/21/DDPM-Bayes.html).
 
 ### 1. Take $$\sigma^2_t=\frac{(1-\bar{\alpha}_{t-1})\beta_t}{(1-\bar{\alpha_t})}$$ (Same as DDPM)
 
