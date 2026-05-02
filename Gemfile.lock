@@ -324,6 +324,10 @@ DEPENDENCIES
   jemoji
   observer
   ostruct
+  terser
+
+RUBY VERSION
+  ruby 3.4.9
 
 BUNDLED WITH
   4.0.4
