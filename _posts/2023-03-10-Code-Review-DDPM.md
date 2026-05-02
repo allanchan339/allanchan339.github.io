@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Code Review: Denoising Diffusion Probabilistic Models (DDPM)"
+title: "Code for Denoising Diffusion Probabilistic Models (DDPM)"
 date: 2023-03-10 00:00:00 +0800
 description: Code walkthrough notes for implementing DDPM with U-Net and diffusion scheduling.
 tags: [ai, review, diffusion, generation]

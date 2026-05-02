@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Review: High-Resolution Image Synthesis with Latent Diffusion Models (LDM)"
+title: "Brief Review on High-Resolution Image Synthesis with Latent Diffusion Models (LDM)"
 date: 2023-04-11 00:00:00 +0800
 description: Review notes on latent diffusion models, latent-space denoising, and guidance methods.
 tags: [ai, review, diffusion, generation]

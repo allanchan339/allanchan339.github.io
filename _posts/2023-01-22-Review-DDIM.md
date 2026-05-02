@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Review: Denoising Diffusion Implicit Models (DDIM)"
+title: "Brief Review on Denoising Diffusion Implicit Models (DDIM)"
 date: 2023-01-22 00:00:00 +0800
 description: Review notes on DDIM and its non-Markovian sampling derivation.
 tags: [ai, review, diffusion, generation]
