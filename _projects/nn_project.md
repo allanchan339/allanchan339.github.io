@@ -31,15 +31,15 @@ AND accurate. See the right figure below.
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/nn-project_margin_vs_stddev.png" title="margin vs std deviation" 
+        {% include figure.liquid path="assets/img/nn-project_margin_vs_stddev.png" title="margin vs std deviation" 
 		class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/nn-project_freq_vs_rating_for_margins.png" title="frequency of each rating, for margin bins"
+        {% include figure.liquid path="assets/img/nn-project_freq_vs_rating_for_margins.png" title="frequency of each rating, for margin bins"
 		class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/nn-project_error_vs_margin.png" title="error vs margin" 
+        {% include figure.liquid path="assets/img/nn-project_error_vs_margin.png" title="error vs margin" 
 		class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
