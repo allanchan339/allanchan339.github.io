@@ -9,37 +9,37 @@ categories: [bug-fixes]
 
 In [my April note on Qwen 3.6-27B]({% post_url 2026-04-29-Qwen36-27B-tool-calling %}) I described a stack that survived a long agentic trace: **`qwen3.5-enhanced.jinja`** on the 3.6 checkpoint, **`qwen3_coder`** for streaming extraction, **`preserve_thinking=false`**, and NCCL tweaks after **Studio Driver 595.79**.
 
-**That is the same cluster of reasons **`preserve_thinking`** had to stay off:** **Qwen 3.6** **sustains** interleaved **thinking** in a way **3.5** largely does not; **`qwen3.5-enhanced.jinja`** **does not repair** missing `` `</think>` `` and can **double-wrap** assistant turns on **3.6**; with **`preserve_thinking=true`** the template **keeps** more of that **broken** structure in **rendered history**, so **prefix pollution**, **CoT bleed**, and **ignored `tool_call`** **get worse**. **`preserve_thinking=false`** was the **pressure-release**—**stripping** much **think** from **earlier** turns so agent runs could finish—not a statement that **3.6** “should not” expose reasoning. I dug in when **reasoning still leaked into `tool_response`** and **tools stopped firing** even with the flag off.
+**That is the same cluster of reasons** `preserve_thinking` **had to stay off:** **Qwen 3.6** **sustains** interleaved **thinking** in a way **3.5** largely does not; **`qwen3.5-enhanced.jinja`** **does not repair** missing <code>&lt;/redacted_thinking&gt;</code> and can **double-wrap** assistant turns on **3.6**; with **`preserve_thinking=true`** the template **keeps** more of that **broken** structure in **rendered history**, so **prefix pollution**, **CoT bleed**, and **ignored `tool_call`** **get worse**. **`preserve_thinking=false`** was the **pressure-release**—**stripping** much **think** from **earlier** turns so agent runs could finish—not a statement that **3.6** “should not” expose reasoning. I dug in when **reasoning still leaked into `tool_response`** and **tools stopped firing** even with the flag off.
 
 I developed **[`qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja)** so the **Qwen 3.6 family** can use an enhanced chat template **without** that compromise: **multimodal** paths, **interleaved** thinking aligned to how **3.6** actually behaves, **self-healing** before the reasoning split, and **`preserve_thinking` supported** (`true` or `false`)—i.e. the **full surface** the **3.6 series** is meant to expose, instead of **turning off** **`preserve_thinking`** to paper over **3.5-enhanced-on-3.6** bugs. [Raw file](https://raw.githubusercontent.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/main/chat-template/qwen3.6-enhanced.jinja) for `vllm serve --chat-template`. **Working proof:** **[qwen36_27B_36jinja_project](https://github.com/allanchan339/qwen36_27B_36jinja_project)**.
 
-This post is the template-side story: **why** pointing raw **`qwen3.5-enhanced.jinja`** at 3.6 could corner the runtime, why that file **never inserts** a missing `` `</think>` `` (it **leaves the broken assistant text in the prompt**—**causal** models still **condition on it**), and the **minimal self‑healing** step I put in the **`assistant`** branch of **`qwen3.6-enhanced.jinja`** before the reasoning split.
+This post is the template-side story: **why** pointing raw **`qwen3.5-enhanced.jinja`** at 3.6 could corner the runtime, why that file **never inserts** a missing <code>&lt;/redacted_thinking&gt;</code> (it **leaves the broken assistant text in the prompt**—**causal** models still **condition on it**), and the **minimal self‑healing** step I put in the **`assistant`** branch of **`qwen3.6-enhanced.jinja`** before the reasoning split.
 
 ## What broke in plain terms
 
 Sometimes the assistant emitted something shaped like:
 
-- an opening think marker (**`qwen3.6-enhanced.jinja`** and **`qwen3.5-enhanced.jinja`** share the same literal `` `<think>` `` family; the April post used **`thinking`** casually for readability),
+- an opening think marker (**`qwen3.6-enhanced.jinja`** and **`qwen3.5-enhanced.jinja`** share the same literal <code>&lt;redacted_thinking&gt;</code> family; the April post used **`thinking`** casually for readability),
 
-- **no closing tag** before a raw `` `<tool_call>` `` block.
+- **no closing tag** before a raw <code>&lt;tool_call&gt;</code> block.
 
 Training and runtime prompts encourage **closed** think sections. Reality is messier: the model can wedge a tool payload **inside** what is effectively still “thinking.”
 
-Separately, using **`qwen3.5-enhanced.jinja`** on **Qwen 3.6** used assistant logic equivalent to wrapping **every** qualifying turn in a synthetic think sandwich **even when `reasoning_content` stayed empty**. That interacted badly with malformed history: after rendering, it could look like the model was **still inside** an outer think envelope when `` `<tool_call>` `` appeared. Downstream behaviour matches what I observed as **CoT leakage across turn boundaries** and **tool instructions that never get scheduled**.
+Separately, using **`qwen3.5-enhanced.jinja`** on **Qwen 3.6** used assistant logic equivalent to wrapping **every** qualifying turn in a synthetic think sandwich **even when `reasoning_content` stayed empty**. That interacted badly with malformed history: after rendering, it could look like the model was **still inside** an outer think envelope when <code>&lt;tool_call&gt;</code> appeared. Downstream behaviour matches what I observed as **CoT leakage across turn boundaries** and **tool instructions that never get scheduled**.
 
 None of this negates **`qwen3_coder`** on 3.6—the parser lane still matters—but fixing the template removes a **structural** failure mode rather than leaning only on parsing heuristics.
 
 ## Why reasoning extraction silently failed
 
-The template extracts `reasoning_content` by looking for `` `</think>` `` in the **message body**. When the assistant never emits that closing tag, the splitter never runs, `reasoning_content` stays **empty**, and the **remainder** stays the full raw string—**including** the unclosed opening think tag ahead of `` `<tool_call>` ``.
+The template extracts `reasoning_content` by looking for <code>&lt;/redacted_thinking&gt;</code> in the **message body**. When the assistant never emits that closing tag, the splitter never runs, `reasoning_content` stays **empty**, and the **remainder** stays the full raw string—**including** the unclosed opening think tag ahead of <code>&lt;tool_call&gt;</code>.
 
-A **3.6-style** handler that unconditionally wrapped “post–last-user” assistant text in opening and closing redacted-thinking fences, **plus** the recombined body, then effectively produced stacked think markup: a **vacant** fenced block followed by thought text that **still began with** another dangling `` `<think>` `` ahead of `` `<tool_call>` ``.
+A **3.6-style** handler that unconditionally wrapped “post–last-user” assistant text in opening and closing redacted-thinking fences, **plus** the recombined body, then effectively produced stacked think markup: a **vacant** fenced block followed by thought text that **still began with** another dangling <code>&lt;redacted_thinking&gt;</code> ahead of <code>&lt;tool_call&gt;</code>.
 
 From the model’s point of view that is dangerously close to “tool call emitted while still reasoning,” which rationalizes **ignored tool XML** and **follow-up prose that belongs in Think leaking into structured tool payloads**.
 
 ### What `qwen3.5-enhanced.jinja` actually does (and does not do)
 
-**`qwen3.5-enhanced.jinja`** does not repair a missing `` `</think>` ``: there is no pass that closes a dangling opener or strips half-open think markup. Whatever the assistant emitted—including **`<think>`** with no matching close before **`tool_call`**—can still **show up** in the **serialized prompt** the **causal** model conditions on next step; “letting it be” is **input-side pollution** in principle whenever that text **stays** in prefix.
+**`qwen3.5-enhanced.jinja`** does not repair a missing <code>&lt;/redacted_thinking&gt;</code>: there is no pass that closes a dangling opener or strips half-open think markup. Whatever the assistant emitted—including <code>&lt;redacted_thinking&gt;</code> with no matching close before **`tool_call`**—can still **show up** in the **serialized prompt** the **causal** model conditions on next step; “letting it be” is **input-side pollution** in principle whenever that text **stays** in prefix.
 
 **Why the same no-fix workaround looked “fine” on Qwen 3.5:** in my runs **Qwen 3.5 does not really sustain** a long-lived **interleaved thinking** block the way **Qwen 3.6** does—it **lacks** that **stickier** “keep thinking open across turns” behaviour. **Interleaved** chat templating also **discards** many **think** segments for assistant turns **before** the last real user message, so **most** of the half-open scaffold **never re-enters** the prefix the model sees. **3.6** is where that stops being a sufficient safety net, so the **same** “don’t repair the close” policy starts to **hurt** visibly (**CoT bleed**, ignored tools) and **self-healing** in **`qwen3.6-enhanced.jinja`** becomes worth the complexity.
 
@@ -47,54 +47,55 @@ Earlier **3.5** assistant logic only wrapped output in an explicit Think block w
 
 ## The fix I settled on
 
-I wanted **deterministic repair**, not another special case that might leave historic turns ending in `` `<think>` `` without a sibling close before `` `<tool_call>` ``:
+I wanted **deterministic repair**, not another special case that might leave historic turns ending in <code>&lt;redacted_thinking&gt;</code> without a sibling close before <code>&lt;tool_call&gt;</code>:
 
 1. **Self-healing (before splitting):**  
-   When both `` `<tool_call>` `` and `` `<think>` `` appear and the **last** `` `</think>` `` sits **before** the **last** `` `<think>` `` (including the `-1 / missing` cases), inject `` `</think>` `` immediately **before** the first `` `<tool_call>` `` when that tool call sits after the dangling opener; otherwise append `` `</think>` `` at the end.
+   When both <code>&lt;tool_call&gt;</code> and <code>&lt;redacted_thinking&gt;</code> appear and the **last** <code>&lt;/redacted_thinking&gt;</code> sits **before** the **last** <code>&lt;redacted_thinking&gt;</code> (including the `-1 / missing` cases), inject <code>&lt;/redacted_thinking&gt;</code> immediately **before** the first <code>&lt;tool_call&gt;</code> when that tool call sits after the dangling opener; otherwise append <code>&lt;/redacted_thinking&gt;</code> at the end.
 
 2. **Keep the outer think wrapper unchanged** afterward: splitting now sees balanced markers, extracts `reasoning_content` cleanly, and the tool payload never sits upstream of **two** contradictory think layers.
 
 Roughly—the snippet lives today in **`qwen3.6-enhanced.jinja`**; the operative structure is:
 
 {% raw %}
-```jinja
-{%- elif message.role == "assistant" -%}
+{::nomarkdown}
+<div class="language-jinja highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{%- elif message.role == &quot;assistant&quot; -%}
     {%- set content = render_content(message.content, true)|trim -%}
 
-    {# Ensure </think> exists before tool XML when opener was left dangling #}
-    {%- if '<tool_call>' in content and '<think>' in content -%}
-        {%- set last_think = content.rfind('<think>') -%}
-        {%- set last_close = content.rfind('</think>') -%}
-        {%- set tool_pos = content.find('<tool_call>') -%}
-        {%- if last_close < last_think or last_close == -1 -%}
-            {%- if tool_pos > last_think -%}
-                {%- set content = content[:tool_pos] ~ '</think>' ~ content[tool_pos:] -%}
+    {# Ensure &lt;/redacted_thinking&gt; exists before tool XML when opener was left dangling #}
+    {%- if &#x27;&lt;tool_call&gt;&#x27; in content and &#x27;&lt;redacted_thinking&gt;&#x27; in content -%}
+        {%- set last_think = content.rfind(&#x27;&lt;redacted_thinking&gt;&#x27;) -%}
+        {%- set last_close = content.rfind(&#x27;&lt;/redacted_thinking&gt;&#x27;) -%}
+        {%- set tool_pos = content.find(&#x27;&lt;tool_call&gt;&#x27;) -%}
+        {%- if last_close &lt; last_think or last_close == -1 -%}
+            {%- if tool_pos &gt; last_think -%}
+                {%- set content = content[:tool_pos] ~ &#x27;&lt;/redacted_thinking&gt;&#x27; ~ content[tool_pos:] -%}
             {%- else -%}
-                {%- set content = content ~ '</think>' -%}
+                {%- set content = content ~ &#x27;&lt;/redacted_thinking&gt;&#x27; -%}
             {%- endif -%}
         {%- endif -%}
     {%- endif -%}
 
-    {%- set reasoning_content = '' -%}
+    {%- set reasoning_content = &#x27;&#x27; -%}
     {# … existing reasoning extraction + interleaved-thinking render … #}
 {%- endif -%}
-```
+</code></pre></div></div>
+{:/nomarkdown}
 {% endraw %}
 
 Above, tags match **[`qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja)** as checked in; if you merge this into another fork, substitute your **literal** open/close think strings verbatim.
 
-**Branches I deliberately did not adopt:** emitting a **trail-only** `` `<think>\n` `` wrapper for assistant history when reasoning is blank but the turn qualifies for preservation. That mirrors the **`add_generation_prompt`** tail—which is appropriate at **generation start**—but is **incorrect** mid-conversation because it nests the next `` `<tool_call>` `` beneath an unfinished think scaffold.
+**Branches I deliberately did not adopt:** emitting a **trail-only** opening tag <code>&lt;redacted_thinking&gt;</code> immediately followed by a newline wrapper for assistant history when reasoning is blank but the turn qualifies for preservation. That mirrors the **`add_generation_prompt`** tail—which is appropriate at **generation start**—but is **incorrect** mid-conversation because it nests the next <code>&lt;tool_call&gt;</code> beneath an unfinished think scaffold.
 
 ## Practical scope
 
-- **Surface area:** the `assistant` message branch through the unchanged `tool` message handler—nothing else needed in my audits (system preamble, structured `` `tool_calls` `` serialization, trailing generation prompt untouched).
+- **Surface area:** the `assistant` message branch through the unchanged `tool` message handler—nothing else needed in my audits (system preamble, structured `tool_calls` serialization, trailing generation prompt untouched).
 - **Interaction with knobs:** with **`qwen3.6-enhanced.jinja`**, **`preserve_thinking=true`** is a safe option again—histories carry **balanced** fences after self-healing, so interleaved-thinking strip/keep semantics stay predictable. On bare **`qwen3.5-enhanced.jinja`** against 3.6 I still recommend **`preserve_thinking=false`** until you migrate.
 
 ## What stays the same in the April stack
 
 [**The April launcher**]({% post_url 2026-04-29-Qwen36-27B-tool-calling %}) remains the blueprint for parsers, GPUs, MARLIN-aligned FP8, NCCL tweaks, **`--disable-custom-all-reduce`** on **595.79**, and **`qwen3_coder`** on 3.6. Point **`--chat-template`** at the local path of **[`qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja)** (clone or copy from [the `chat-template/` folder](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/tree/main/chat-template)); **`--default-chat-template-kwargs`** can then set **`preserve_thinking`** to **`true`** or **`false`** as you prefer (April’s **`preserve_thinking=false`** was keyed to **`qwen3.5-enhanced.jinja`** on 3.6, not to vLLM itself).
 
-Where I reran transcripts that previously reproduced leakage, executions **scheduled** reliably again and stray reasoning stopped surfacing downstream of repaired `` `<tool_call>` `` markers; the public trace and code live in **[qwen36_27B_36jinja_project](https://github.com/allanchan339/qwen36_27B_36jinja_project)**. Others’ mileage will vary by checkpoint and client parsing, which is exactly why **I publish both halves**: parser ergonomics plus **truthful templating**, plus a **repo you can clone** when a blog post is not enough.
+Where I reran transcripts that previously reproduced leakage, executions **scheduled** reliably again and stray reasoning stopped surfacing downstream of repaired <code>&lt;tool_call&gt;</code> markers; the public trace and code live in **[qwen36_27B_36jinja_project](https://github.com/allanchan339/qwen36_27B_36jinja_project)**. Others’ mileage will vary by checkpoint and client parsing, which is exactly why **I publish both halves**: parser ergonomics plus **truthful templating**, plus a **repo you can clone** when a blog post is not enough.
 
 ## vLLM launch recipe (`qwen3.6-enhanced.jinja`, `preserve_thinking=true`)
 
@@ -167,7 +168,7 @@ vllm serve $MODEL_NAME \
 
 ## Summary
 
-The flawed **`qwen3.5-enhanced.jinja`** assistant branch aimed at **3.6**, combined with **sometimes-unclosed `` `<think>` `` markers**, yielded **double layering** after rendering: vacant synthetic think blocks atop still-open reasoning. Downstream failures looked like ignored tools and polluted tool responses—not always mistakable for NCCL deadlocks.
+The flawed **`qwen3.5-enhanced.jinja`** assistant branch aimed at **3.6**, combined with **sometimes-unclosed <code>&lt;redacted_thinking&gt;</code> markers**, yielded **double layering** after rendering: vacant synthetic think blocks atop still-open reasoning. Downstream failures looked like ignored tools and polluted tool responses—not always mistakable for NCCL deadlocks.
 
 **`qwen3.5-enhanced.jinja`** could **look** less explosive on **3.5** partly because an **empty** `reasoning_content` **skipped** an extra synthetic wrapper—**not** because it **healed** think markup—and partly because **Qwen 3.5** in my experience **does not keep** a **thinking** block **alive** the way **3.6** does, so **prefix pollution** rarely **compounds**. **That skip disappeared on the faulty 3.6-on-3.5 path**, and **3.6** **does** sustain interleaved thinking, so **`preserve_thinking=false`** on the old file masked **double-layer** tool failures while **dirty prefixes** became a **first-class** problem.
 
