@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Review: Denoising Diffusion Probabilistic Models (DDPM) from Bayes' Theorem"
+title: "Denoising Diffusion Probabilistic Models (DDPM) from Bayes' Theorem"
 date: 2023-02-22 00:00:00 +0800
 description: DDPM derivation notes from a Bayes perspective.
 tags: [ai, review, diffusion, generation]
