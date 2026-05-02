@@ -83,8 +83,7 @@ display_categories: [research, journey, bug-fixes, reflection]
         <ul>
           {%- for category in page.display_categories %}
           {%- assign categorized_posts = site.posts | where_exp: "post", "post.categories contains category" -%}
-          {%- assign category_words = category | replace: "-", " " | split: " " -%}
-          {%- capture category_label -%}{%- for word in category_words -%}{{ word | capitalize }}{% unless forloop.last %} {% endunless %}{%- endfor -%}{%- endcapture -%}
+          {%- capture category_label -%}{% include category_label.html category=category %}{%- endcapture -%}
           {%- if categorized_posts.size > 0 -%}
           <li>
             <a href="#category-{{ category | slugify }}">{{ category_label | strip }}</a>
@@ -104,8 +103,7 @@ display_categories: [research, journey, bug-fixes, reflection]
   {%- if page.display_categories %}
   {%- for category in page.display_categories %}
   {%- assign categorized_posts = site.posts | where_exp: "post", "post.categories contains category" -%}
-  {%- assign category_words = category | replace: "-", " " | split: " " -%}
-  {%- capture category_label -%}{%- for word in category_words -%}{{ word | capitalize }}{% unless forloop.last %} {% endunless %}{%- endfor -%}{%- endcapture -%}
+  {%- capture category_label -%}{% include category_label.html category=category %}{%- endcapture -%}
   {%- if categorized_posts.size > 0 -%}
   <h2 id="category-{{ category | slugify }}" class="category">{{ category_label | strip }}</h2>
   <ul class="post-list">
