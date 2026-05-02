@@ -3,7 +3,7 @@ layout: page
 title: blogs
 permalink: /blogs/
 description:
-nav: true
+nav: false
 nav_order: 3
 display_categories: [research, journey, bug-fixes, reflection]
 ---
@@ -83,7 +83,7 @@ display_categories: [research, journey, bug-fixes, reflection]
         <ul>
           {%- for category in page.display_categories %}
           {%- assign categorized_posts = site.posts | where_exp: "post", "post.categories contains category" -%}
-          {%- capture category_label -%}{% include category_label.html category=category %}{%- endcapture -%}
+          {%- capture category_label -%}{% include category_label.liquid category=category %}{%- endcapture -%}
           {%- if categorized_posts.size > 0 -%}
           <li>
             <a href="#category-{{ category | slugify }}">{{ category_label | strip }}</a>
@@ -103,7 +103,7 @@ display_categories: [research, journey, bug-fixes, reflection]
   {%- if page.display_categories %}
   {%- for category in page.display_categories %}
   {%- assign categorized_posts = site.posts | where_exp: "post", "post.categories contains category" -%}
-  {%- capture category_label -%}{% include category_label.html category=category %}{%- endcapture -%}
+  {%- capture category_label -%}{% include category_label.liquid category=category %}{%- endcapture -%}
   {%- if categorized_posts.size > 0 -%}
   <h2 id="category-{{ category | slugify }}" class="category">{{ category_label | strip }}</h2>
   <ul class="post-list">

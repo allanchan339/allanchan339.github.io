@@ -1,12 +1,14 @@
+# Repositories page (/repositories/). See also _pages/repositories.md
+# repo_description_lines_max: clipping for GitHub card descriptions (readme stats)
+repo_description_lines_max: 2
+
 github_users:
-  - torvalds
-  - alshedivat
+  - allanchan339
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - allanchan339/allanchan339.github.io
+  - allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix
+  - allanchan339/qwen36_27B_own_project
+  - allanchan339/qwen_own_project
+  - allanchan339/AnlightenDiff
+  - allanchan339/VLM_Soccer_Commentator_THG
