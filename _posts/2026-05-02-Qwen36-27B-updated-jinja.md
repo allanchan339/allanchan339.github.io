@@ -7,7 +7,7 @@ tags: [vllm, qwen, tool-calling, llm, jinja, agent, inference]
 categories: [bug-fixes]
 ---
 
-In [my April note on Qwen 3.6-27B]([{% post_url 2026-04-29-Qwen36-27B-tool-calling %}](https://www.reddit.com/r/LocalLLM/comments/1sv6cqk/follow_up_tested_tool_calling_fixes_for_qwen/)) I described a stack that survived a long agentic trace: **`qwen3.5-enhanced.jinja`** (my **3.5-oriented** enhanced template) on the 3.6 checkpoint, **`qwen3_coder`** for streaming extraction, **`preserve_thinking=false`**, and NCCL tweaks after **Studio Driver 595.79**.
+In [my April note on Qwen 3.6-27B]({% post_url 2026-04-29-Qwen36-27B-tool-calling %}) I described a stack that survived a long agentic trace: **`qwen3.5-enhanced.jinja`** on the 3.6 checkpoint, **`qwen3_coder`** for streaming extraction, **`preserve_thinking=false`**, and NCCL tweaks after **Studio Driver 595.79**.
 
 **That is the same cluster of reasons **`preserve_thinking`** had to stay off:** **Qwen 3.6** **sustains** interleaved **thinking** in a way **3.5** largely does not; **`qwen3.5-enhanced.jinja`** **does not repair** missing `` `</think>` `` and can **double-wrap** assistant turns on **3.6**; with **`preserve_thinking=true`** the template **keeps** more of that **broken** structure in **rendered history**, so **prefix pollution**, **CoT bleed**, and **ignored `tool_call`** **get worse**. **`preserve_thinking=false`** was the **pressure-release**—**stripping** much **think** from **earlier** turns so agent runs could finish—not a statement that **3.6** “should not” expose reasoning. I dug in when **reasoning still leaked into `tool_response`** and **tools stopped firing** even with the flag off.
 
@@ -56,6 +56,7 @@ I wanted **deterministic repair**, not another special case that might leave his
 
 Roughly—the snippet lives today in **`qwen3.6-enhanced.jinja`**; the operative structure is:
 
+{% raw %}
 ```jinja
 {%- elif message.role == "assistant" -%}
     {%- set content = render_content(message.content, true)|trim -%}
@@ -78,6 +79,7 @@ Roughly—the snippet lives today in **`qwen3.6-enhanced.jinja`**; the operative
     {# … existing reasoning extraction + interleaved-thinking render … #}
 {%- endif -%}
 ```
+{% endraw %}
 
 Above, tags match **[`qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja)** as checked in; if you merge this into another fork, substitute your **literal** open/close think strings verbatim.
 
@@ -94,6 +96,74 @@ Above, tags match **[`qwen3.6-enhanced.jinja`](https://github.com/allanchan339/v
 
 Where I reran transcripts that previously reproduced leakage, executions **scheduled** reliably again and stray reasoning stopped surfacing downstream of repaired `` `<tool_call>` `` markers; the public trace and code live in **[qwen36_27B_36jinja_project](https://github.com/allanchan339/qwen36_27B_36jinja_project)**. Others’ mileage will vary by checkpoint and client parsing, which is exactly why **I publish both halves**: parser ergonomics plus **truthful templating**, plus a **repo you can clone** when a blog post is not enough.
 
+## vLLM launch recipe (`qwen3.6-enhanced.jinja`, `preserve_thinking=true`)
+
+Below is the **vLLM** recipe I use with **`qwen3.6-enhanced.jinja`** and **`preserve_thinking: true`** (the pairing this post is about). Point **`--chat-template`** at your local copy—e.g. from [`chat-template/qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja). Adjust **`source …/activate`**, **GPU** indices, and paths for your box. Lines that end with `\` plus an inline `# …` can trip some shells; drop those comments after `\` if paste fails.
+
+On **NVIDIA Studio 595.79** with **mixed GPUs** I still needed **`--disable-custom-all-reduce`** for stability ([April note]({% post_url 2026-04-29-Qwen36-27B-tool-calling %})); it is commented here so you can enable it without hunting the flag.
+
+```bash
+#!/bin/bash
+# ------------------------------
+# Safe, Speed-Focused Env Vars
+# ------------------------------
+export CUDA_DEVICE_ORDER=PCI_BUS_ID  # mixed-GPU safeguard
+export CUDA_VISIBLE_DEVICES=0,1
+export NCCL_CUMEM_ENABLE=0
+export VLLM_ENABLE_CUDAGRAPH_GC=1
+export VLLM_USE_FLASHINFER_SAMPLER=1
+
+export OMP_NUM_THREADS=8
+
+# NCCL tuning for SYS/PCIe topology
+export NCCL_P2P_DISABLE=1
+export NCCL_IB_DISABLE=1
+export NCCL_SHM_DISABLE=0
+export NCCL_ALGO=Ring
+export MODEL_NAME="Qwen/Qwen3.6-27B-FP8"
+export NCCL_P2P_LEVEL=LOC
+export VLLM_RPC_TIMEOUT=180
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
+
+# --------------------------
+# Clean stale FlashInfer cache
+# --------------------------
+rm -rf ~/.cache/flashinfer
+
+# Activate virtual environment (change to your path)
+source /home/cychan/vLLM/.venv/bin/activate
+
+export VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1
+export VLLM_TEST_FORCE_FP8_MARLIN=1
+export VLLM_SLEEP_WHEN_IDLE=1
+
+vllm serve $MODEL_NAME \
+  --served-model-name Qwen3.5-27B \
+  --chat-template qwen3.6-enhanced.jinja \
+  --default-chat-template-kwargs '{"preserve_thinking": true}' \
+  --attention-backend FLASHINFER \
+  --trust-remote-code \
+  --tensor-parallel-size 2 \
+  --max-model-len 219520 \
+  --gpu-memory-utilization 0.91 \
+  --enable-auto-tool-choice \
+  --enable-chunked-prefill \
+  --enable-prefix-caching \
+  --max-num-batched-tokens 12288 \
+  --max-num-seqs 4 \
+  --kv-cache-dtype fp8 \
+  --tool-call-parser qwen3_coder \
+  --reasoning-parser qwen3 \
+  --no-use-tqdm-on-load \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --language-model-only
+#  --disable-custom-all-reduce   # uncomment on Studio 595.79 + mixed GPU if you hit NCCL deadlocks (see April post)
+
+# Optional: Qwen3 MTP speculative decoding (needs headroom; 80B-A3B speculator not on current hardware)
+#  --speculative-config '{"method":"qwen3_next_mtp","num_speculative_tokens":5}' \
+```
+
 ## Summary
 
 The flawed **`qwen3.5-enhanced.jinja`** assistant branch aimed at **3.6**, combined with **sometimes-unclosed `` `<think>` `` markers**, yielded **double layering** after rendering: vacant synthetic think blocks atop still-open reasoning. Downstream failures looked like ignored tools and polluted tool responses—not always mistakable for NCCL deadlocks.
@@ -108,5 +178,5 @@ The flawed **`qwen3.5-enhanced.jinja`** assistant branch aimed at **3.6**, combi
 - **[`qwen3.5-enhanced.jinja` (source)](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.5-enhanced.jinja)**
 - **[Repository: vLLM Qwen 3 / 3.5 / 3.6 chat-template fix](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix)** — `chat-template/`
 - **[Proof: `qwen3.6-enhanced.jinja` agentic run — qwen36_27B_36jinja_project](https://github.com/allanchan339/qwen36_27B_36jinja_project)**
-- [Prior field note: Qwen 3.6-27B on vLLM with `qwen3.5-enhanced.jinja`](https://www.reddit.com/r/LocalLLM/comments/1sv6cqk/follow_up_tested_tool_calling_fixes_for_qwen/)
+- [Prior field note: Qwen 3.6-27B on vLLM with `qwen3.5-enhanced.jinja`]({% post_url 2026-04-29-Qwen36-27B-tool-calling %}) — [Reddit discussion](https://www.reddit.com/r/LocalLLM/comments/1sv6cqk/follow_up_tested_tool_calling_fixes_for_qwen/)
 - [April demo project (`qwen3.5-enhanced.jinja` on 3.6)](https://github.com/allanchan339/qwen36_27B_own_project)
