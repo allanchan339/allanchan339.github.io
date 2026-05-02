@@ -13,7 +13,7 @@ In [my April note on Qwen 3.6-27B]({% post_url 2026-04-29-Qwen36-27B-tool-callin
 
 I developed **[`qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja)** so the **Qwen 3.6 family** can use an enhanced chat template **without** that compromise: **multimodal** paths, **interleaved** thinking aligned to how **3.6** actually behaves, **self-healing** before the reasoning split, and **`preserve_thinking` supported** (`true` or `false`)—i.e. the **full surface** the **3.6 series** is meant to expose, instead of **turning off** **`preserve_thinking`** to paper over **3.5-enhanced-on-3.6** bugs. [Raw file](https://raw.githubusercontent.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/main/chat-template/qwen3.6-enhanced.jinja) for `vllm serve --chat-template`. **Working proof (128k token spent):** **[qwen36_27B_36jinja_project](https://github.com/allanchan339/qwen36_27B_36jinja_project)**.
 
-![圖 0](https://i.imgur.com/De3lzXY.png)  
+![Token trace after the qwen3.6-enhanced.jinja run (~128k tokens spent; served from this site)]({{ '/assets/img/posts/2026-05-02-qwen36-jinja-token-trace.png' | relative_url }})
 
 This post is the template-side story: **why** pointing raw **`qwen3.5-enhanced.jinja`** at 3.6 could corner the runtime, why that file **never inserts** a missing <code>&lt;/redacted_thinking&gt;</code> (it **leaves the broken assistant text in the prompt**—**causal** models still **condition on it**), and the **minimal self‑healing** step I put in the **`assistant`** branch of **`qwen3.6-enhanced.jinja`** before the reasoning split.
 
