@@ -2,7 +2,7 @@
 layout: post
 title: "qwen3.6-enhanced.jinja: CoT leakage into tool turns and why preserve_thinking works now"
 date: 2026-05-02 00:00:00 +0800
-description: "Why Qwen 3.6 with qwen3.5-enhanced.jinja forced preserve_thinking=false, and how qwen3.6-enhanced.jinja restores full Qwen 3.6-series capability—self-healing think/tool boundaries, safe preserve_thinking."
+description: "Why Qwen 3.6 with qwen3.5-enhanced.jinja forced preserve_thinking=false, and how qwen3.6-enhanced.jinja restores full Qwen 3.6-series capability—self-healing think/tool boundaries, safe preserve_thinking. Launch recipe tested on vLLM v0.19.0."
 tags: [vllm, qwen, tool-calling, llm, jinja, agent, inference]
 categories: [bug-fixes]
 ---
@@ -98,12 +98,13 @@ Where I reran transcripts that previously reproduced leakage, executions **sched
 
 ## vLLM launch recipe (`qwen3.6-enhanced.jinja`, `preserve_thinking=true`)
 
-Below is the **vLLM** recipe I use with **`qwen3.6-enhanced.jinja`** and **`preserve_thinking: true`** (the pairing this post is about). Point **`--chat-template`** at your local copy—e.g. from [`chat-template/qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja). Adjust **`source …/activate`**, **GPU** indices, and paths for your box. Lines that end with `\` plus an inline `# …` can trip some shells; drop those comments after `\` if paste fails.
+Below is the **vLLM** recipe I use with **`qwen3.6-enhanced.jinja`** and **`preserve_thinking: true`** (the pairing this post is about). **I tested this configuration on vLLM v0.19.0**; newer or older releases may need small flag or env tweaks. Point **`--chat-template`** at your local copy—e.g. from [`chat-template/qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja). Adjust **`source …/activate`**, **GPU** indices, and paths for your box. Lines that end with `\` plus an inline `# …` can trip some shells; drop those comments after `\` if paste fails.
 
 On **NVIDIA Studio 595.79** with **mixed GPUs** I still needed **`--disable-custom-all-reduce`** for stability ([April note]({% post_url 2026-04-29-Qwen36-27B-tool-calling %})); it is commented here so you can enable it without hunting the flag.
 
 ```bash
 #!/bin/bash
+# vLLM v0.19.0 (recipe tested on this version)
 # ------------------------------
 # Safe, Speed-Focused Env Vars
 # ------------------------------
