@@ -9,7 +9,7 @@ categories: [research]
 
 # Introduction
 
-DDPM maths background and introduction can refer to [Review: Denoising Diffusion Probabilistic Models (DDPM)](2022-12-21-Review-DDPM.md)
+DDPM maths background and introduction can refer to [Review: Denoising Diffusion Probabilistic Models (DDPM)](/research/2022/12/20/Review-DDPM.html)
 
 In short, we have a the following training algorithm to be implemented 
 
