@@ -34,14 +34,14 @@ I'd like to use destruction instead of forward process. Basically we want to mak
 
 ### Sum of two Gaussian distribution
 
-Two Gaussian ,e.g. \\(\mathbb{N}(0,\sigma^2_1 \boldsymbol{I}) \And  \mathbb{N}(0,\sigma^2_2 \boldsymbol{I})\\) with different variance can be merged to \\(\mathbb{N}(0,(\sigma^2_1+\sigma^2_2) \boldsymbol{I})\\)
+Two Gaussian ,e.g. \\(\mathbb{N}(0,\sigma^2_1 \boldsymbol{I}) \text{ and } \mathbb{N}(0,\sigma^2_2 \boldsymbol{I})\\) with different variance can be merged to \\(\mathbb{N}(0,(\sigma^2_1+\sigma^2_2) \boldsymbol{I})\\)
 
 > By [Wiki](https://en.wikipedia.org/wiki/Sum_of_normally_distributed_random_variables), Let \\(X\\) and \\(Y\\) be independent random variables that are normally distributed (and therefore also jointly so), then their sum is also noramlly distributed, i.e., if
 >
 > $$
 > \begin{aligned}
 > X &\sim \mathbb{N}(\mu_X, \sigma^2_X) \\
-> X &\sim \mathbb{N}(\mu_Y, \sigma^2_Y) \\
+> Y &\sim \mathbb{N}(\mu_Y, \sigma^2_Y) \\
 > Z &= X+Y \\
 > \end{aligned}
 > $$
@@ -71,8 +71,7 @@ As \\(X_i \sim \mathbb{N}(\mu_i, \Sigma_i), i=1 \cdots N,\\), we have claim they
 A newly aggregated these Gaussian distributions is defined as a weighted sum:
 
 $$
-X=\sum_{i=1}^{N} a_i X_i=\sum_{i=1}^{N} \frac{n_i}{\sum_{l=1}^{N}n_l} X_i, \\ 
-\text{where} \sum_{i=1}^N a_i = 1
+X=\sum_{i=1}^{N} a_i X_i=\sum_{i=1}^{N} \frac{n_i}{\sum_{l=1}^{N}n_l} X_i, \quad \text{where } \sum_{i=1}^N a_i = 1
 $$
 
 Therefore, we can find the merged variance as:
@@ -137,12 +136,12 @@ y_T - y_0 &= \sum^T_{t=1}\frac{\sqrt{1-\alpha_t}}{\sqrt{\bar{\alpha}_t}}\epsilon
 \therefore x_T &= \sqrt{\bar{\alpha_T}}x_0 + \sum^T_{t=1}\sqrt{\frac{\bar{\alpha_T}}{\bar{\alpha_t}}}\sqrt{1-\alpha_t}\epsilon_t \\
 
 \text{We define } \bar{\epsilon} &:= \frac{1}{\sqrt{1-\bar{\alpha_T}}} \sum^T_{t=1}\sqrt{\frac{\bar{\alpha_T}}{\bar{\alpha_t}}}\sqrt{1-\alpha_t}\epsilon_t \text{ is normally distributed} \\
-\mathbb{E}[\bar{\epsilon}] &= \frac{1}{\sqrt{1-\bar{\alpha_T}}}\sum^T_{t=1}\sqrt{\frac{\bar{\alpha_T}}{\bar{\alpha_t}}}\sqrt{1-\alpha_t}\cancelto{0}{\mathbb{E}[\epsilon_t]} = 0 \\
+\mathbb{E}[\bar{\epsilon}] &= \frac{1}{\sqrt{1-\bar{\alpha_T}}}\sum^T_{t=1}\sqrt{\frac{\bar{\alpha_T}}{\bar{\alpha_t}}}\sqrt{1-\alpha_t}\mathbb{E}[\epsilon_t] = 0 \\
 
 Var(\bar{\epsilon}) &= \frac{1}{1-\bar{\alpha_T}}\sum^T_{t=1}\frac{\bar{\alpha_T}}{\bar{\alpha_t}}(1-\alpha_t)Var(\epsilon_t); \text{ where } Var(\epsilon_t) = \mathbf{I} \\
 &=\frac{1}{1-\bar{\alpha_T}}\sum^T_{t=1}\Big( \frac{\bar{\alpha_T}}{\bar{\alpha_t}} - \frac{\bar{\alpha_T}}{\bar{\alpha_{t-1}}} \Big)I \\
-&= \frac{1}{1-\bar{\alpha_T}}\Big( \frac{\bar{\alpha_T}}{\bar{\alpha_T}} - \frac{\bar{\alpha_T}}{\bar{\alpha_{0}}} \Big) I = I
-\therefore \bar{\epsilon} \sim \mathcal{N}(0, \mathbb{I}) \\
+&= \frac{1}{1-\bar{\alpha_T}}\Big( \frac{\bar{\alpha_T}}{\bar{\alpha_T}} - \frac{\bar{\alpha_T}}{\bar{\alpha_{0}}} \Big) I = I \\
+\therefore \bar{\epsilon} &\sim \mathcal{N}(0, \mathbb{I}) \\
 \therefore x_T &= \sqrt{\bar{\alpha_T}}x_0 + \sqrt{1-\bar{\alpha_T}}\bar{\epsilon} \\
 q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})
 \end{aligned}
@@ -162,9 +161,9 @@ $$
 
  is formed by a schedule. The schedule is responsible to how the way is to destruct an image to pure noise.
 
-#### Linear Schedule
+#### Linear schedule
 
-The DDPM adopt linear schedule as follows:
+The original DDPM paper uses a **linear** \\(\beta_t\\) schedule: \\(\beta_t\\) increases evenly from a small start value to a fixed end value over \\(T\\) steps. In code this is often implemented as evenly spaced values between `beta_start` and `beta_end`:
 
 ```python
 def linear_beta_schedule(timesteps):
@@ -173,27 +172,32 @@ def linear_beta_schedule(timesteps):
     return torch.linspace(beta_start, beta_end, timesteps)
 ```
 
-![linear schedule](https://i.imgur.com/Y5HARtf.png)
+![Linear beta schedule: alpha-bar versus timestep](/assets/img/posts/ddpm-linear-schedule.png)
 
-#### Cosine Schedule
+#### Cosine schedule
 
-![cosine schedule](https://i.imgur.com/dj9bcqr.png)
-Later cosine schedule is proponsed. It replace the linear schedule as:
+A **cosine** schedule for \\(\bar{\alpha}_t\\) was proposed later so that signal is destroyed more slowly at the beginning and noise does not saturate too early. Intuitively, compared with a linear \\(\beta\\) schedule:
 
-- In linear schedule, the last couple of timesteps already seems like complete noise
-- and might be redundan.
-- Therefore, Information is destroyed too fast.
+- For many of the **last** timesteps, the sample already looks like almost pure noise, so extra steps there add little information and can feel redundant.
+- Noise is injected quite aggressively in the linear setup, so **high-level structure can disappear relatively fast**.
 
-Cosine schedule can solve the problem mentioned above.
+A cosine-style schedule spreads the loss of structure more evenly across timesteps and mitigates those effects. The figure below contrasts the shape of the schedule (implementation details vary by paper).
+
+![Cosine-style noise schedule (illustrative)](/assets/img/posts/ddpm-cosine-schedule.png)
 
 ### Connection with frequency and destruction
 
-![Illustration of forward process](https://i.imgur.com/OdL8Agc.png)
+![Forward process and frequency content](/assets/img/posts/ddpm-forward-frequency.png)
 
-- At small t, most of the low frequency contents are not perturbed by the noise, but high frequency content are being perturbed.
-- At bigger t, low frequency contents are also perturbed.
-- At the end of forward process, we get rid of the both low and high frequency contents of image.
-  ![Freqency connection](https://i.imgur.com/l3f0Wo3.png)
+- At **small** \\(t\\), most **low-frequency** content is still largely intact, while **high-frequency** detail is perturbed first.
+- At **larger** \\(t\\), low-frequency structure is perturbed as well.
+- By the **end** of the forward process, both low- and high-frequency components are washed out.
+
+#### Frequency connection
+
+As the forward process progresses, perturbations move from mostly high-frequency detail toward lower-frequency structure as well.
+
+![Frequency content versus noise level over time](/assets/img/posts/ddpm-frequency-connection.png)
 
 ## Building (Reverse Process)
 
@@ -232,7 +236,7 @@ $$
 \mathbb{L} &= \left\Vert\boldsymbol{x}_{t-1} - \boldsymbol{\mu}(\boldsymbol{x}_t)\right\Vert^2 \\
 &= \left\Vert\frac{1}{\sqrt{\alpha_t}}(\boldsymbol{x}_t - \sqrt{\beta_t}\epsilon_t) - \boldsymbol{\mu}(\boldsymbol{x}_t)\right\Vert^2 \\
 &= \frac{\beta_t}{\alpha_t}\left\Vert \boldsymbol{\varepsilon}_t - \boldsymbol{\epsilon}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)\right\Vert^2 \\
-&= \frac{\beta_t}{\alpha_t}\left\Vert \boldsymbol{\varepsilon}_t - \boldsymbol{\epsilon}_{\boldsymbol{\theta}}(\sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{\bar{\beta}}\boldsymbol{\bar{\epsilon}}, t)\right\Vert^2
+&= \frac{\beta_t}{\alpha_t}\left\Vert \boldsymbol{\varepsilon}_t - \boldsymbol{\epsilon}_{\boldsymbol{\theta}}(\sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\boldsymbol{\bar{\epsilon}}, t)\right\Vert^2
 \end{aligned}
 $$
 
@@ -263,7 +267,7 @@ The training algorithm is
 In other words:
 
 1. we take a random sample \\(\mathbf{x}_0\\) from the real unknown and possibily complex data distribution \\(q(\mathbf{x}_0)\\)
-​
+
 2. we sample a noise level \\(t\\) uniformally between \\(1\\) and \\(T\\) (i.e., a random time step)
 
 3. we sample some noise from a Gaussian distribution and corrupt the input by this noise at level \\(t\\) (using the nice property defined above)
