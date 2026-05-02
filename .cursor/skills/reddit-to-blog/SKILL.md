@@ -16,6 +16,8 @@ Turn **thread-native** prose (Reddit, forum, or chat-export style) into a **cohe
 
 When the output lives in this repo as Jekyll markdown, **also follow** [.cursor/skills/posts_quality/SKILL.md](../posts_quality/SKILL.md) (front matter, `categories`, build).
 
+Information and fact in original reddit thread must be preserved in the blog post. What is expected to change is tone, style, and structure to make it a coherent blog article.
+
 ## Voice and diction
 
 - **First person** for the person publishing the blog (they wrote the original): prefer *I found*, *my setup*, *in my runs* — never *the author*.
