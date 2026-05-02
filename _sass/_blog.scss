@@ -122,6 +122,12 @@
       }
     }
   }
+
+  // Keep markdown-rendered images inside the post content width.
+  .post-content img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 .featured-posts {
