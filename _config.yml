@@ -123,8 +123,8 @@ giscus:
   emit_metadata: 0
   lang: en
 
-# Disqus comments (DEPRECATED)
-disqus_shortname: al-folio # put your disqus shortname
+# Disqus comments (DEPRECATED - disabled, using Giscus instead)
+# disqus_shortname: # deprecated, use Giscus for comments
 # https://help.disqus.com/en/articles/1717111-what-s-a-shortname
 
 external_sources: []
