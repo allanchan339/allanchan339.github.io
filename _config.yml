@@ -23,7 +23,7 @@ url: https://allanchan339.github.io
 baseurl:
 timezone: Asia/Hong_Kong
 
-last_updated: false # set to true if you want to display last updated in the footer
+last_updated: true # set to true if you want to display last updated in the footer
 impressum_path: # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
 back_to_top: true # set to false to disable the back to top button
 
@@ -97,7 +97,7 @@ bing_site_verification: # out your bing-site-verification ID (Bing Webmaster)
 
 blog_name: Blog
 blog_description: Technical notes — LLMs, infra, quant
-lsi: false # produce an index for related posts
+lsi: true # produce an index for related posts
 
 # Pagination (required for `_pages/blog.md` listing like upstream al-folio)
 pagination:
@@ -155,6 +155,7 @@ collections:
     permalink: /projects/:path/
   teachings:
     output: true
+    permalink: /teachings/:path/
 
 # -----------------------------------------------------------------------------
 # Jekyll settings
@@ -195,6 +196,7 @@ exclude:
   - README.md
   - readme_preview/
   - vendor
+  - AGENTS.md
 keep_files:
   - CNAME
   - .nojekyll
@@ -401,7 +403,7 @@ enable_bing_verification: false # enables bing site verification
 enable_cookie_consent: false # enables GDPR-compliant cookie consent dialog (https://github.com/orestbida/cookieconsent)
 enable_masonry: true # enables automatic project cards arrangement
 enable_math: true # enables math typesetting (uses MathJax)
-enable_tooltips: false # enables automatic tooltip links generated for each section titles on pages and posts
+enable_tooltips: true # enables automatic tooltip links generated for each section titles on pages and posts
 enable_darkmode: true # enables switching between light/dark modes
 enable_navbar_social: false # enables displaying social links in the navbar on the about page
 enable_project_categories: true # enables categorization of projects into multiple categories
