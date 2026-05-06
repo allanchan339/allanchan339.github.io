@@ -10,12 +10,12 @@ contact_note: >
   Please feel free to reach out on LinkedIn or by email.
 
 description: >
-  My personal website
+  Technical notes — LLMs, infra, quant
 
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
   Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
-keywords:
+keywords: ["LLM", "infrastructure", "quant", "personal blog", "Cheuk-Yiu Chan"]
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: favicon.jpg
 
@@ -72,9 +72,9 @@ max_width: 800px
 # -----------------------------------------------------------------------------
 # Display links to the page with a preview object on social media.
 # see https://schema.org/docs/faq.html for more information
-serve_og_meta: false # Include Open Graph meta tags in the HTML head
-serve_schema_org: false # Include Schema.org in the HTML head
-og_image: # The site-wide (default for all links) Open Graph preview image
+serve_og_meta: true # Include Open Graph meta tags in the HTML head
+serve_schema_org: true # Include Schema.org in the HTML head
+og_image: /assets/img/og-default.png # The site-wide (default for all links) Open Graph preview image
 
 # -----------------------------------------------------------------------------
 # Analytics and search engine verification
