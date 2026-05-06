@@ -118,10 +118,10 @@ insightful and exciting event. I'm looking forward to another competition next
 year!
 
 <div style="margin-left: auto;margin-right: auto;">
-    <object data="../../assets/pdf/pbg_comp_slides_glazar.pdf" type="application/pdf" width="825px" height="465px">
-        <embed src="../../assets/pdf/pbg_comp_slides_glazar.pdf">
+    <object data="../../assets/pdf/example_pdf.pdf" type="application/pdf" width="825px" height="465px">
+        <embed src="../../assets/pdf/example_pdf.pdf">
             <p>This browser does not support PDFs. Please download the PDF to view it: 
-            <a href="../../assets/pdf/pbg_comp_slides_glazar.pdf">Download PDF</a>.</p>
+            <a href="../../assets/pdf/example_pdf.pdf">Download PDF</a>.</p>
         </embed>
     </object>
 </div>
