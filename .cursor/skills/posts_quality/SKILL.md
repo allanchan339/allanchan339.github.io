@@ -62,11 +62,16 @@ Ensure each edited post follows current metadata conventions, renders math corre
      - run the same build command again
      - repeat until build succeeds
 7. After build succeeds, verify page rendering for each edited post:
-   - derive the local page URL from filename date + slug, e.g. `_posts/2022-12-21-DDPM-Bayes.md` -> `http://127.0.0.1:4000/blog/2022/12/21/ddpm-bayes.html`
-   - open/fetch the page and confirm:
-     - inline math is rendered (not raw LaTeX text)
-     - display math blocks render correctly
-     - no broken formatting around equations
+    - derive the local page URL from filename date + slug, e.g. `_posts/2022-12-21-DDPM-Bayes.md` -> `http://127.0.0.1:4000/blog/2022/12/21/ddpm-bayes.html`
+    - open/fetch the page and confirm:
+      - inline math is rendered (not raw LaTeX text)
+      - display math blocks render correctly
+      - no broken formatting around equations
+      - images are rendered correctly:
+        - check `<img>` tags exist with correct `src` attributes in rendered HTML
+        - verify image URLs are accessible (return HTTP 200)
+        - confirm images display properly in browser (not broken/missing)
+        - verify image styling (e.g., centered with `display: block; margin: 0 auto`)
 8. If rendering is still wrong:
    - fix markdown/math delimiters in source
    - rerun pipeline validation from step 6 until both build and render checks pass
@@ -85,6 +90,11 @@ Ensure each edited post follows current metadata conventions, renders math corre
 - [ ] Site build succeeds
 - [ ] Corresponding local page(s) checked for render/display issues after successful build
 - [ ] No raw LaTeX appears on checked page(s)
+- [ ] Images render correctly in browser:
+  - [ ] `<img>` tags present with correct `src` attributes in rendered HTML
+  - [ ] Image URLs are accessible (HTTP 200 response)
+  - [ ] Images display properly (not broken/missing icons)
+  - [ ] Image styling applied correctly (e.g., centered with proper CSS)
 - [ ] Repeat fixes/build/render checks until page quality is acceptable
 
 ## Common Fix Patterns
