@@ -20,10 +20,7 @@ The generated commentary text is then voiced by a text-to-speech engine — eith
 
 ## Demo
 
-<figure>
-  <video src="https://github.com/user-attachments/assets/c7c591a9-0d32-4a28-9794-f3880621b8c5" controls width="100%" preload="metadata"></video>
-  <figcaption class="caption">Full demo recording — end-to-end commentary + talking-head.</figcaption>
-</figure>
+{% include video.liquid path="/assets/videos/soccer-commentary-full-demo.mp4" controls=true width="100%" caption="Full demo recording — end-to-end commentary + talking-head." %}
 
 <!-- <figure>
   <video src="https://github.com/user-attachments/assets/c24946a7-0f81-490c-840a-9f5c3c9300aa" controls width="100%" preload="metadata"></video>
@@ -35,10 +32,7 @@ The generated commentary text is then voiced by a text-to-speech engine — eith
   <figcaption class="caption">Commentary result — EdgeTTS voice.</figcaption>
 </figure> -->
 
-<figure>
-  <video src="https://github.com/user-attachments/assets/8112062a-c9a8-4de0-b188-719088bb8bf8" controls width="100%" preload="metadata"></video>
-  <figcaption class="caption">Commentary result — GPT-SoVITS voice.</figcaption>
-</figure>
+{% include video.liquid path="/assets/videos/soccer-commentary-gpt-sovits.mp4" controls=true width="100%" caption="Commentary result — GPT-SoVITS voice." %}
 
 
 ## Related Repo
