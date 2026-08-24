@@ -28,7 +28,7 @@ Casting LLIE as conditional generation rather than end-to-end regression matters
 
 ### Anchoring the generative process
 
-The enhancement direction exploits the fact that a vanilla diffusion model, left unconstrained, can drift away from the observed low-light measurement. A *dynamically regulated* anchoring mechanism fixes this by shifting the mean of the forward perturbation so the generative trajectory is pulled toward the input distribution. The anchored forward step becomes
+When left to its own devices, a diffusion model can wander away from the actual low-light photo it is supposed to fix. The anchoring mechanism prevents this: it nudges the noise trajectory so the model keeps paying attention to the original image. The anchored forward step becomes
 
 $$
 \mathbf{x}_t = \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon}_t^\star,
@@ -48,9 +48,9 @@ $$
 \right).
 $$
 
-This image-domain supervision, paired with the anchoring sampler, is what yields stable, faithful restorations rather than hallucinated ones. The enhancement models are trained and evaluated on the standard LLIE benchmarks (LOL, VE-LOL, and LOL-v2).
+In short, anchoring keeps the model honest to the input instead of guessing. The figure below shows this directly: on the left, enhancement *without* anchoring loses detail and washes the colors toward a flat white filter; on the right, the anchored method preserves both fine detail and natural color mapping, with clearly better lighting. The enhancement models are trained and evaluated on the standard LLIE benchmarks (LOL, VE-LOL, and LOL-v2).
 
-{% include figure.liquid path="/assets/img/siu12abcd-3486610-large.gif" alt="Before and after the dynamically regulated diffusion anchoring" caption="Before/after illustration of the dynamically regulated diffusion anchoring (DRDA): the anchored enhancement restores a well-exposed image that stays faithful to the low-light input, avoiding the color bias and over-smoothing of classical methods." %}
+{% include figure.liquid path="/assets/img/siu12abcd-3486610-large.gif" alt="Before and after the dynamically regulated diffusion anchoring" caption="Before and after of the diffusion anchoring (DRDA). With anchoring (right), the enhanced image keeps fine detail and natural color with better lighting; without it (left), the result loses detail and color and tends toward a flat white-filter look." %}
 
 ### Back-projection for low-light synthesis
 
