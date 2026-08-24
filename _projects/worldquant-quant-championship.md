@@ -2,7 +2,7 @@
 layout: page
 title: WorldQuant International Quant Championship 2026
 description: Building an LLM-as-researcher alpha discovery engine (AlphaMine) and reaching the National Finals of the WorldQuant International Quant Championship 2026
-img: /assets/img/IQC.png
+img: /assets/img/IQC.jpg
 importance: 1
 ---
 
