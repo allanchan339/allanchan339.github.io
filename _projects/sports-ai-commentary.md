@@ -20,8 +20,12 @@ The generated commentary text is then voiced by a text-to-speech engine — eith
 
 ## Demo
 
-
 <figure>
+  <video src="https://github.com/user-attachments/assets/c7c591a9-0d32-4a28-9794-f3880621b8c5" controls width="100%" preload="metadata"></video>
+  <figcaption class="caption">Full demo recording — end-to-end commentary + talking-head.</figcaption>
+</figure>
+
+<!-- <figure>
   <video src="https://github.com/user-attachments/assets/c24946a7-0f81-490c-840a-9f5c3c9300aa" controls width="100%" preload="metadata"></video>
   <figcaption class="caption">Pure lip-sync demo.</figcaption>
 </figure>
@@ -29,17 +33,13 @@ The generated commentary text is then voiced by a text-to-speech engine — eith
 <figure>
   <video src="https://github.com/user-attachments/assets/41373536-0d6b-4d08-be6a-fc39612c4176" controls width="100%" preload="metadata"></video>
   <figcaption class="caption">Commentary result — EdgeTTS voice.</figcaption>
-</figure>
+</figure> -->
 
 <figure>
   <video src="https://github.com/user-attachments/assets/8112062a-c9a8-4de0-b188-719088bb8bf8" controls width="100%" preload="metadata"></video>
   <figcaption class="caption">Commentary result — GPT-SoVITS voice.</figcaption>
 </figure>
 
-<figure>
-  <video src="https://github.com/user-attachments/assets/c7c591a9-0d32-4a28-9794-f3880621b8c5" controls width="100%" preload="metadata"></video>
-  <figcaption class="caption">Full demo recording — end-to-end commentary + talking-head.</figcaption>
-</figure>
 
 ## Related Repo
 
