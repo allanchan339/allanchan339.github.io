@@ -3,7 +3,7 @@ layout: page
 title: Diffusion-Based Low-Light Image Enhancement & Synthesis
 description: Conditional diffusion models for low-light image enhancement — anchoring and back-projection strategies for statistical fidelity
 img: /assets/img/siu1ab-3486610-large.gif
-importance: 2
+importance: 3
 ---
 
 Low-light image enhancement (LLIE) is the task of recovering a well-exposed, faithful image from a capture taken under poor illumination. The difficulty is that darkness is not a simple global dimming: real low-light frames carry heavy sensor noise, color bias, low signal-to-noise ratio, and blur, and any attempt to brighten them naively tends to either over-smooth the result or amplify the very noise it should suppress. Supervised learning compounds the problem — paired low/normal-light captures are scarce, so models are starved of the data they need to learn the true statistics of darkness.

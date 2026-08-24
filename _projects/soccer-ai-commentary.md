@@ -3,7 +3,7 @@ layout: page
 title: Soccer AI Commentary
 description: Automatic soccer commentary generation — mixed spatial-temporal attention and vision-language talking-head synthesis
 img: /assets/paris-2024-olympics-soccer.jpg
-importance: 3
+importance: 4
 ---
 
 Soccer is the world's most-watched sport, yet professional commentary is a skilled, real-time human craft that scales only to the matches someone is paid to cover. The long tail of lower-league, amateur, and archived games goes silent, and visually impaired fans are locked out of the audio description that makes a broadcast followable. Automatic commentary closes that gap: it turns raw footage into scalable match narration, instant highlights, and accessible play-by-play, sitting at the intersection of video understanding, language generation, and speech and video synthesis.

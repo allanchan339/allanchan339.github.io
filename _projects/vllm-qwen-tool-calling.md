@@ -3,7 +3,7 @@ layout: page
 title: Qwen 3.X Tool-Calling Silent Failure in vLLM
 description: A root-cause fix for Qwen3.x tool-calling silent failures on vLLM via a self-healing chat template
 img: assets/img/vLLM.jpg
-importance: 1
+importance: 2
 ---
 
 I developed a self-healing chat template that fixes a structural tool-calling failure affecting the Qwen3.x series on vLLM. The core artifact is [`qwen3.6-enhanced.jinja`](https://github.com/allanchan339/vLLM-Qwen3-3.5-3.6-chat-template-fix/blob/main/chat-template/qwen3.6-enhanced.jinja), which repairs unclosed thinking markers before the reasoning split so `preserve_thinking` becomes a free choice instead of a forced-off workaround.
