@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Diffusion-Based Low-Light Image Enhancement
+title: Diffusion-Based Low-Light Image Enhancement & Synthesis
 description: Conditional diffusion models for low-light image enhancement — anchoring and back-projection strategies for statistical fidelity
 img: /assets/img/siu1ab-3486610-large.gif
 importance: 2
