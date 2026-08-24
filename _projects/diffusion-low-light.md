@@ -2,7 +2,7 @@
 layout: page
 title: Diffusion-Based Low-Light Image Enhancement
 description: Conditional diffusion models for low-light image enhancement — anchoring and back-projection strategies for statistical fidelity
-img: /assets/siu1ab-3486610-large.gif
+img: /assets/img/siu1ab-3486610-large.gif
 importance: 2
 ---
 
@@ -50,10 +50,7 @@ $$
 
 This image-domain supervision, paired with the anchoring sampler, is what yields stable, faithful restorations rather than hallucinated ones. The enhancement models are trained and evaluated on the standard LLIE benchmarks (LOL, VE-LOL, and LOL-v2).
 
-<figure>
-  <img src="/assets/siu12abcd-3486610-large.gif" alt="Before and after the dynamically regulated diffusion anchoring" style="width:100%" />
-  <figcaption class="caption">Before/after illustration of the dynamically regulated diffusion anchoring (DRDA): the anchored enhancement restores a well-exposed image that stays faithful to the low-light input, avoiding the color bias and over-smoothing of classical methods.</figcaption>
-</figure>
+{% include figure.liquid path="/assets/img/siu12abcd-3486610-large.gif" alt="Before and after the dynamically regulated diffusion anchoring" caption="Before/after illustration of the dynamically regulated diffusion anchoring (DRDA): the anchored enhancement restores a well-exposed image that stays faithful to the low-light input, avoiding the color bias and over-smoothing of classical methods." %}
 
 ### Back-projection for low-light synthesis
 
@@ -65,10 +62,7 @@ To model the narrow dynamic range and nuanced noise of real low-light sensors, t
 
 The figure below illustrates the normal-to-low synthesis direction: how the back-projection generative model turns a single normal-light image into diverse, physically plausible low-light samples, and how the synthesized data compares with simpler augmentation techniques.
 
-<figure>
-  <img src="/assets/n2ldiff-bp-3.png" alt="Qualitative results of the back-projection generative model" style="width:100%" />
-  <figcaption class="caption">Qualitative results of the back-projection generative model: synthesized low-light images capture authentic noise, blur, and color distortion, and outperform simpler augmentation baselines.</figcaption>
-</figure>
+{% include figure.liquid path="/assets/img/n2ldiff-bp-3.png" alt="Qualitative results of the back-projection generative model" caption="Qualitative results of the back-projection generative model: synthesized low-light images capture authentic noise, blur, and color distortion, and outperform simpler augmentation baselines." %}
 
 On the enhancement side, the anchoring formulation consistently improves perceptual quality over regression baselines: by constraining the reverse process to the input distribution, it suppresses the color bias and over-smoothing that plague classical methods, while the diffusion-feature perceptual loss reduces residual artifacts. Quantitative gains appear on the standard LLIE benchmarks across PSNR, SSIM, and perceptual (LPIPS) metrics, and the synthesized data from the inverse direction measurably improves the robustness of downstream enhancement models.
 
