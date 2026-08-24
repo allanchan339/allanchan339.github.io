@@ -272,7 +272,7 @@ Before invoking `claude`:
 
 # Resources
 
-- [ForgeBookAuto — Claude Code third-party models (quick reference)](https://github.com/allanchan339/ForgeBookAuto/blob/main/docs/claude-code-third-party-models.md)
+- [vLLM docs — Claude Code integration](https://docs.vllm.ai/en/latest/serving/integrations/claude_code/)
 - [BigModel docs — coding plan / Claude (working third-party pattern)](https://docs.bigmodel.cn/cn/coding-plan/tool/claude)
 - [vLLM docs — Claude Code integration](https://docs.vllm.ai/en/latest/serving/integrations/claude_code/) (useful but incomplete versus real client behavior)
 - Related GitHub issues: **#18025**, **#23266**, **#34821**
