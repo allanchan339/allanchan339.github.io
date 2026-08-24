@@ -1,8 +1,8 @@
 ---
 layout: page
-title: Sports AI Commentary
+title: Soccer AI Commentary
 description: Automatic soccer commentary generation — mixed spatial-temporal attention and vision-language talking-head synthesis
-img:
+img: /assets/paris-2024-olympics-soccer.jpg
 importance: 3
 ---
 
